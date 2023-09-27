@@ -1,8 +1,15 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 using Olimpiadas2023.Data;
+using Olimpiadas2023.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConexion");
+builder.Services.AddDbContextFactory<CodigoAzulContext>(options =>
+    options.UseSqlServer(connectionString)
+);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
