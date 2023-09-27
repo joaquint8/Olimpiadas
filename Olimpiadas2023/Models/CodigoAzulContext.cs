@@ -18,7 +18,12 @@ namespace Olimpiadas2023.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-
+            modelBuilder.Entity<Persona>()
+                .HasDiscriminator<int>("TipoPersona")
+                .HasValue<Empleado>(1)
+                .HasValue<Paciente>(2);
+            
+            
             //configuracion de los enums
             modelBuilder
                .Entity<Persona>()

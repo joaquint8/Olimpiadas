@@ -7,7 +7,7 @@ namespace Olimpiadas2023.Models
     [Index(nameof(NumeroHabitacion))]
     public class Habitacion
     {
-        public int HabitacionesId { get; set; }
+        public int HabitacionId { get; set; }
         [Required]
         public int NumeroHabitacion { get; set; }
         public TipoHabitacion TipoHabitacion { get; set; }
