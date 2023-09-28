@@ -12,6 +12,7 @@ namespace Olimpiadas2023.Models
         public List<Tratamiento>? Tratamientos { get; set; }
         public List<ResultadoExamen>? ResultadosExamenes { get; set; }
         public string Diagnostico { get; set; }
+        public int PacienteId { get; set; }
         public Paciente? Paciente { get; set; }
 
     }

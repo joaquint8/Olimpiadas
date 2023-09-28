@@ -40,7 +40,7 @@ namespace Olimpiadas2023.Migrations
 
                     b.HasIndex("PacientePersonaId");
 
-                    b.ToTable("Alergia");
+                    b.ToTable("Alergia", (string)null);
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Enfermedad", b =>
@@ -61,7 +61,7 @@ namespace Olimpiadas2023.Migrations
 
                     b.HasIndex("PacientePersonaId");
 
-                    b.ToTable("Enfermedad");
+                    b.ToTable("Enfermedad", (string)null);
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Medicamento", b =>
@@ -82,7 +82,7 @@ namespace Olimpiadas2023.Migrations
 
                     b.HasIndex("PacientePersonaId");
 
-                    b.ToTable("Medicamento");
+                    b.ToTable("Medicamento", (string)null);
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.ResultadoExamen", b =>
@@ -103,7 +103,7 @@ namespace Olimpiadas2023.Migrations
 
                     b.HasIndex("HistorialMedicoId");
 
-                    b.ToTable("ResultadoExamen");
+                    b.ToTable("ResultadoExamen", (string)null);
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Sintoma", b =>
@@ -124,7 +124,7 @@ namespace Olimpiadas2023.Migrations
 
                     b.HasIndex("HistorialMedicoId");
 
-                    b.ToTable("Sintoma");
+                    b.ToTable("Sintoma", (string)null);
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Tratamiento", b =>
@@ -145,7 +145,7 @@ namespace Olimpiadas2023.Migrations
 
                     b.HasIndex("HistorialMedicoId");
 
-                    b.ToTable("Tratamiento");
+                    b.ToTable("Tratamiento", (string)null);
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Habitacion", b =>
@@ -179,7 +179,7 @@ namespace Olimpiadas2023.Migrations
 
                     b.HasIndex("NumeroHabitacion");
 
-                    b.ToTable("Habitaciones");
+                    b.ToTable("Habitaciones", (string)null);
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.HistorialMedico", b =>
@@ -196,7 +196,7 @@ namespace Olimpiadas2023.Migrations
 
                     b.HasKey("HistorialMedicoId");
 
-                    b.ToTable("HistorialMedico");
+                    b.ToTable("HistorialMedico", (string)null);
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Personales.Persona", b =>
@@ -237,7 +237,7 @@ namespace Olimpiadas2023.Migrations
 
                     b.HasKey("PersonaId");
 
-                    b.ToTable("Personas");
+                    b.ToTable("Personas", (string)null);
 
                     b.HasDiscriminator<int>("TipoPersona");
 

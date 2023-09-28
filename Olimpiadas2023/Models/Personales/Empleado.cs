@@ -1,4 +1,5 @@
 ﻿using Olimpiadas2023.Enum;
+using Olimpiadas2023.Models.Sesiones;
 using System.Reflection.Metadata.Ecma335;
 
 namespace Olimpiadas2023.Models.Personales
@@ -10,6 +11,8 @@ namespace Olimpiadas2023.Models.Personales
         public string Horarios { get; set; }
         public TipoProfesion Profesion { get; set; }
         public string? Especializacion { get; set; }
+        public int UsuarioId { get; set; }
+        public Usuario? UsuarioEmpleado { get; set; }
         
     }
 }
