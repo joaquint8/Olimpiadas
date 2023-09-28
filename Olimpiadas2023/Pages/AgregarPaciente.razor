@@ -85,21 +85,18 @@
     </FormItem>
     @if (switchValue == true)
     {
+        <div>
+            <FormItem Label="Alergias">
+                <Table Context="Alergias" DataSource="@PacienteVM.Alergias" Bordered>
+                <PropertyColumn Property="c=>c.Descripcion"></PropertyColumn>
+            </Table>
+        </FormItem>
         <FormItem Label="Nueva Alergia">
-            <Input @bind-Value="nuevaAlergia" />
+            <Input @bind-Value="@nuevaAlergia" />
         </FormItem>
         <FormItem>
-            <Button OnClick="@AgregarAlergia">Agregar alergia</Button>
+            <Button OnClick="@(() => AgregarAlergia())">Agregar alergia</Button>
         </FormItem>
-        <div>
-            <Table Context="Alergias" DataSource="ListAlergias" Bordered>
-            <PropertyColumn Property="c=>c.Alergias"></PropertyColumn>
-            <ActionColumn Title="Acciones">
-                <Template>
-                    <a OnClick="() => deleteRowAlergias(Paciente.Alergias)">Eliminar</a>
-                </Template>
-            </ActionColumn>
-        </Table>
         </div>
     }
     <FormItem Label="Enfermedades">
@@ -127,8 +124,24 @@
     string searchString;
     IEnumerable<PacienteViewModel> selectedRows;
     List<Paciente>? pacientes { get; set; } = new();
-    public PacienteViewModel PacienteVM = new PacienteViewModel();
-    public List<PacienteViewModel> ListAlergias { get; set; } = new();
+
+    public class PacienteViewModel : PersonaViewModel
+    {
+        public List<Alergia> Alergias { get; set; }
+        public DateTime FechaIngreso { get; set; }
+        public DateTime FechaAlta { get; set; }
+        public List<Enfermedad>? Enfermedades { get; set; }
+        public List<Medicamento>? Medicamentos { get; set; }
+        public Area? AreaPaciente { get; set; }
+
+        public PacienteViewModel()
+        {
+            Alergias = new List<Alergia>();
+        }
+        
+    } 
+
+    PacienteViewModel PacienteVM = new PacienteViewModel();
     List<PacienteViewModel> PacientesVMList { get; set; } = new();
     private string nuevaAlergia;
     CodigoAzulContext Context { get; set; }
@@ -149,12 +162,26 @@
         PacienteVM = new();
         Context = DbFactory.CreateDbContext();
     }
-
-    public async Task AgregarAlergia()
+    public void AgregarAlergia()
     {
-        
+        // Convertir el valor de la variable `nuevaAlergia` a un tipo `Alergia`.
+        Alergia alergia = ConvertirAlergia(nuevaAlergia);
+
+        // Agregar la instancia de la clase `Alergia` a la lista `ListAlergias`.
+        PacienteVM.Alergias.Add(alergia);
     }
 
+    public Alergia ConvertirAlergia(string descripcion)
+    {
+        // Crear una instancia de la clase `Alergia`.
+        Alergia alergia = new Alergia();
+
+        // Establecer el valor de la propiedad `Descripcion` con el valor del parámetro `descripcion`.
+        alergia.Descripcion = descripcion;
+
+        // Devolver la instancia de la clase `Alergia`.
+        return alergia;
+    }
 
     public async void OnFinish(EditContext editContext)
     {

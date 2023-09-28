@@ -30,8 +30,8 @@
             <PropertyColumn Property="p=>p.GrupoSanguineo" Sortable />
 			<PropertyColumn Property="p=>p.FechaIngreso" />
 			<PropertyColumn Property="p=>p.FechaAlta" />
-			@* <PropertyColumn Property="p=>p.Alergias" />
-			<PropertyColumn Property="p=>p.Enfermedades" />
+			<PropertyColumn Property="p=>p.Alergias" />
+			@* <PropertyColumn Property="p=>p.Enfermedades" />
 			<PropertyColumn Property="p=>p.Medicamentos" /> *@
             <ActionColumn Title="Acciones">
                 <Space>
@@ -101,6 +101,7 @@
         <FormItem Label="Estado">
 			<EnumSelect DefaultValue="@PacienteVM.Telefono" @bind-Value="@PacienteVM.Telefono" />
         </FormItem>
+
     </Form>
 </Modal>
 
