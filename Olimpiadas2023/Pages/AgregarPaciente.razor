@@ -2,6 +2,7 @@
 @inject IDbContextFactory<CodigoAzulContext> DbFactory
 @inject IMessageService message;
 @page "/AgregarPacientes"
+@using Olimpiadas2023.Enum;
 
 <style>
     /* tile uploaded pictures */
@@ -71,11 +72,15 @@
         <Input @bind-Value="@PacienteVM.Telefono" />
     </FormItem>
     <FormItem Label="Fecha de ingreso">
-        <InputDate @bind-Value="@PacienteVM.FechaIngreso" />
+        <DatePicker TValue="DateTime" ShowTime="@true" OnChange="OnChange" @bind-Value="@PacienteVM.FechaIngreso" />
     </FormItem>
     <FormItem Label="Fecha de alta">
-        <InputDate @bind-Value="@PacienteVM.FechaAlta" />
+        <DatePicker TValue="DateTime" ShowTime="@true" OnChange="OnChange" @bind-Value="@PacienteVM.FechaAlta" />
     </FormItem>
+    <FormItem Label="Tipo estado licencia">
+        <EnumSelect TEnum="TipoGrupoSanguineo" @bind-Value="@PacienteVM.GrupoSanguineo" />
+    </FormItem>
+
     @*<FormItem Label="Alergias">
         <Input @bind-Value="@PacienteVM.Alergias" />
     </FormItem>
@@ -136,8 +141,8 @@
             }
             PacientesVMList.Clear();
             var pacienteDB = await Context.Pacientes.ToListAsync();
-                Paciente pacientesCarga = new()
-                    {
+            Paciente pacientesCarga = new()
+                {
                     Nombre = PacienteVM.Nombre,
                     Apellido = PacienteVM.Apellido,
                     Direccion = PacienteVM.Direccion,
@@ -146,10 +151,11 @@
                     GrupoSanguineo = PacienteVM.GrupoSanguineo,
                     FechaIngreso = PacienteVM.FechaIngreso,
                     FechaAlta = PacienteVM.FechaAlta,
-                        Alergias = new(),
-                        Enfermedades = new(),
-                        Medicamentos = new()
-                    };
+                    Alergias = new(),
+                    Enfermedades = new(),
+                    Medicamentos = new(),
+                    AreaPaciente = new()
+                };
             foreach (PacienteViewModel alergias in PacientesVMList)
             {
                 Paciente? pacienteAlergia = await Context.Pacientes.SingleOrDefaultAsync(a => a.Alergias == alergias.Alergias);
@@ -181,7 +187,7 @@
             await Context.SaveChangesAsync();
             await Init();
             StateHasChanged();
-            await message.Success("Handie agregado correctamente");
+            await message.Success("Paciente agregado correctamente");
         }
         catch (Exception ex)
         {
@@ -198,7 +204,11 @@
     {
         Console.WriteLine($"Failed:{JsonSerializer.Serialize(PacienteVM)}");
     }
-
+    private void OnChange(DateTimeChangedEventArgs args)
+    {
+        Console.WriteLine($"Selected Time: {args.Date}");
+        Console.WriteLine($"Formatted Selected Time: {args.DateString}");
+    }
     public void Dispose()
     {
         Context?.Dispose();

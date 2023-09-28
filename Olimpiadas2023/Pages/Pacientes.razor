@@ -30,9 +30,9 @@
             <PropertyColumn Property="p=>p.GrupoSanguineo" Sortable />
 			<PropertyColumn Property="p=>p.FechaIngreso" />
 			<PropertyColumn Property="p=>p.FechaAlta" />
-			<PropertyColumn Property="p=>p.Alergias" />
+			@* <PropertyColumn Property="p=>p.Alergias" />
 			<PropertyColumn Property="p=>p.Enfermedades" />
-			<PropertyColumn Property="p=>p.Medicamentos" />
+			<PropertyColumn Property="p=>p.Medicamentos" /> *@
             <ActionColumn Title="Acciones">
                 <Space>
                     <SpaceItem>
@@ -134,7 +134,8 @@
 	public async Task CargarPacienteVM()
 	{
 		PacientesVMList.Clear();
-		var pacienteDB = await Context.Pacientes.ToListAsync();
+		var pacienteDB = await Context.Pacientes.Include(p=>p.Alergias).Include(p=>p.Enfermedades)
+		.Include(m=>m.Medicamentos).Include(a=>a.AreaPaciente).ToListAsync();
 
 		foreach (Paciente p in pacienteDB)
 		{
@@ -148,39 +149,14 @@
 					GrupoSanguineo = p.GrupoSanguineo,
 					FechaIngreso = p.FechaIngreso,
 					FechaAlta = p.FechaAlta,
-					Alergias = new(),
-					Enfermedades = new(),
-					Medicamentos = new()
+					Alergias = p.Alergias,
+					Enfermedades = p.Enfermedades,
+					Medicamentos = p.Medicamentos,
+					AreaAsignada = p.AreaPaciente 
 				};
+			PacientesVMList.Add(pacienteViewModel);
 		}
-		foreach (PacienteViewModel alergias in PacientesVMList)
-		{
-			Paciente? pacienteAlergia = await Context.Pacientes.SingleOrDefaultAsync(a => a.Alergias == alergias.Alergias);
-			Paciente pAlergia = new()
-				{
-					Alergias = alergias.Alergias
-				};
-			pacientes.Add(pAlergia);
-		}
-		foreach (PacienteViewModel enfermedades in PacientesVMList)
-		{
-			Paciente? pacienteEnfermedades = await Context.Pacientes.SingleOrDefaultAsync(e => e.Enfermedades == enfermedades.Enfermedades);
-			Paciente pEnfermedad = new()
-				{
-					Enfermedades = enfermedades.Enfermedades
-				};
-			pacientes.Add(pEnfermedad);
-		}
-		foreach (PacienteViewModel medicamentos in PacientesVMList)
-		{
-			Paciente? pacienteMedicamentos = await Context.Pacientes.SingleOrDefaultAsync(m => m.Medicamentos == medicamentos.Medicamentos);
-			Paciente pMedicamentos = new()
-				{
-					Medicamentos = medicamentos.Medicamentos
-				};
-			pacientes.Add(pMedicamentos);
-		}
-		PacientesVMList.Add(pacienteViewModel);
+		
 	}
 
 	void OnRowClick(RowData<PacienteViewModel> row)

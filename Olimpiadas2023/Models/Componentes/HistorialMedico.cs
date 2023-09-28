@@ -1,9 +1,8 @@
-﻿using Olimpiadas2023.Models.Componentes;
-using Olimpiadas2023.Models.Personales;
+﻿using Olimpiadas2023.Models.Personales;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Metadata.Ecma335;
 
-namespace Olimpiadas2023.Models
+namespace Olimpiadas2023.Models.Componentes
 {
     public class HistorialMedico
     {

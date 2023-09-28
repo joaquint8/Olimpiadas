@@ -1,5 +1,6 @@
 ﻿using Olimpiadas2023.Enum;
 using Olimpiadas2023.Models.Personales;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Metadata.Ecma335;
 
 namespace Olimpiadas2023.Models.Componentes
@@ -15,12 +16,11 @@ namespace Olimpiadas2023.Models.Componentes
         public int AreaId { get; set; }
         public Area? Area { get; set; }
 
-        public int PacienteId { get; set; }
+        [InverseProperty("PacienteArea")]
+        public int PersonaId { get; set; }
         public Paciente? PacienteAsignado { get; set; }
 
-        public int HabitacionId { get; set; }
-        public Habitacion? HabitacionAsignada { get; set; }
-
+        [InverseProperty("EmpleadoArea")]
         public int EmpleadoId { get; set; }
         public Empleado? EmpleadoAsignado { get; set; }
 

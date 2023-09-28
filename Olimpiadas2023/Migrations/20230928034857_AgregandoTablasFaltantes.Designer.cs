@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Olimpiadas2023.Models;
 
@@ -11,9 +12,11 @@ using Olimpiadas2023.Models;
 namespace Olimpiadas2023.Migrations
 {
     [DbContext(typeof(CodigoAzulContext))]
-    partial class CodigoAzulContextModelSnapshot : ModelSnapshot
+    [Migration("20230928034857_AgregandoTablasFaltantes")]
+    partial class AgregandoTablasFaltantes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,12 +57,14 @@ namespace Olimpiadas2023.Migrations
                     b.Property<string>("TipoAcceso")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TipoArea")
-                        .HasColumnType("int");
+                    b.Property<string>("TipoArea")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("AreaId");
 
-                    b.ToTable("Area");
+                    b.ToTable("areas");
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Enfermedad", b =>
@@ -83,63 +88,6 @@ namespace Olimpiadas2023.Migrations
                     b.ToTable("Enfermedad");
                 });
 
-            modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Habitacion", b =>
-                {
-                    b.Property<int>("HabitacionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HabitacionId"));
-
-                    b.Property<int>("Capacidad")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Descripcion")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EstadoHabitacion")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<int>("NumeroHabitacion")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TipoHabitacion")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("HabitacionId");
-
-                    b.HasIndex("NumeroHabitacion");
-
-                    b.ToTable("Habitaciones");
-                });
-
-            modelBuilder.Entity("Olimpiadas2023.Models.Componentes.HistorialMedico", b =>
-                {
-                    b.Property<int>("HistorialMedicoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HistorialMedicoId"));
-
-                    b.Property<string>("Diagnostico")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PacienteId")
-                        .HasColumnType("int");
-
-                    b.HasKey("HistorialMedicoId");
-
-                    b.HasIndex("PacienteId")
-                        .IsUnique();
-
-                    b.ToTable("HistorialMedico");
-                });
-
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.IngresoPaciente", b =>
                 {
                     b.Property<int>("IngresoPacienteId")
@@ -155,8 +103,10 @@ namespace Olimpiadas2023.Migrations
                     b.Property<int>("HabitacionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Importancia")
-                        .HasColumnType("int");
+                    b.Property<string>("Importancia")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("PacienteId")
                         .HasColumnType("int");
@@ -167,7 +117,54 @@ namespace Olimpiadas2023.Migrations
 
                     b.HasIndex("PacienteId");
 
-                    b.ToTable("IngresoPaciente");
+                    b.ToTable("IngresoPacientes");
+                });
+
+            modelBuilder.Entity("Olimpiadas2023.Models.Componentes.LLamada", b =>
+                {
+                    b.Property<int>("LlamadaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LlamadaId"));
+
+                    b.Property<int>("AreaId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Atendio")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("EmpleadoId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("PacienteAsignadoPersonaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PersonaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("origenLlamado")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("tipoLLamada")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("LlamadaId");
+
+                    b.HasIndex("AreaId");
+
+                    b.HasIndex("EmpleadoId");
+
+                    b.HasIndex("PacienteAsignadoPersonaId");
+
+                    b.ToTable("lLamadas");
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Medicamento", b =>
@@ -254,6 +251,63 @@ namespace Olimpiadas2023.Migrations
                     b.ToTable("Tratamiento");
                 });
 
+            modelBuilder.Entity("Olimpiadas2023.Models.Habitacion", b =>
+                {
+                    b.Property<int>("HabitacionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HabitacionId"));
+
+                    b.Property<int>("Capacidad")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Descripcion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EstadoHabitacion")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("NumeroHabitacion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TipoHabitacion")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("HabitacionId");
+
+                    b.HasIndex("NumeroHabitacion");
+
+                    b.ToTable("Habitaciones");
+                });
+
+            modelBuilder.Entity("Olimpiadas2023.Models.HistorialMedico", b =>
+                {
+                    b.Property<int>("HistorialMedicoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HistorialMedicoId"));
+
+                    b.Property<string>("Diagnostico")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PacienteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("HistorialMedicoId");
+
+                    b.HasIndex("PacienteId")
+                        .IsUnique();
+
+                    b.ToTable("HistorialMedico");
+                });
+
             modelBuilder.Entity("Olimpiadas2023.Models.Personales.Persona", b =>
                 {
                     b.Property<int>("PersonaId")
@@ -313,7 +367,7 @@ namespace Olimpiadas2023.Migrations
 
                     b.HasKey("RolId");
 
-                    b.ToTable("Rol");
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Sesiones.Usuario", b =>
@@ -340,7 +394,7 @@ namespace Olimpiadas2023.Migrations
                     b.HasIndex("RolId")
                         .IsUnique();
 
-                    b.ToTable("Usuario");
+                    b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Personales.Empleado", b =>
@@ -410,20 +464,9 @@ namespace Olimpiadas2023.Migrations
                     b.Navigation("Paciente");
                 });
 
-            modelBuilder.Entity("Olimpiadas2023.Models.Componentes.HistorialMedico", b =>
-                {
-                    b.HasOne("Olimpiadas2023.Models.Personales.Paciente", "Paciente")
-                        .WithOne("HistorialMedicos")
-                        .HasForeignKey("Olimpiadas2023.Models.Componentes.HistorialMedico", "PacienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Paciente");
-                });
-
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.IngresoPaciente", b =>
                 {
-                    b.HasOne("Olimpiadas2023.Models.Componentes.Habitacion", "Habitacion")
+                    b.HasOne("Olimpiadas2023.Models.Habitacion", "Habitacion")
                         .WithMany()
                         .HasForeignKey("HabitacionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -440,6 +483,31 @@ namespace Olimpiadas2023.Migrations
                     b.Navigation("Paciente");
                 });
 
+            modelBuilder.Entity("Olimpiadas2023.Models.Componentes.LLamada", b =>
+                {
+                    b.HasOne("Olimpiadas2023.Models.Componentes.Area", "Area")
+                        .WithMany()
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Olimpiadas2023.Models.Personales.Empleado", "EmpleadoAsignado")
+                        .WithMany()
+                        .HasForeignKey("EmpleadoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Olimpiadas2023.Models.Personales.Paciente", "PacienteAsignado")
+                        .WithMany()
+                        .HasForeignKey("PacienteAsignadoPersonaId");
+
+                    b.Navigation("Area");
+
+                    b.Navigation("EmpleadoAsignado");
+
+                    b.Navigation("PacienteAsignado");
+                });
+
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Medicamento", b =>
                 {
                     b.HasOne("Olimpiadas2023.Models.Personales.Paciente", "Paciente")
@@ -451,7 +519,7 @@ namespace Olimpiadas2023.Migrations
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.ResultadoExamen", b =>
                 {
-                    b.HasOne("Olimpiadas2023.Models.Componentes.HistorialMedico", "HistorialMedico")
+                    b.HasOne("Olimpiadas2023.Models.HistorialMedico", "HistorialMedico")
                         .WithMany("ResultadosExamenes")
                         .HasForeignKey("HistorialMedicoId");
 
@@ -460,7 +528,7 @@ namespace Olimpiadas2023.Migrations
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Sintoma", b =>
                 {
-                    b.HasOne("Olimpiadas2023.Models.Componentes.HistorialMedico", "HistorialMedico")
+                    b.HasOne("Olimpiadas2023.Models.HistorialMedico", "HistorialMedico")
                         .WithMany("Sintomas")
                         .HasForeignKey("HistorialMedicoId");
 
@@ -469,11 +537,22 @@ namespace Olimpiadas2023.Migrations
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Tratamiento", b =>
                 {
-                    b.HasOne("Olimpiadas2023.Models.Componentes.HistorialMedico", "HistorialMedico")
+                    b.HasOne("Olimpiadas2023.Models.HistorialMedico", "HistorialMedico")
                         .WithMany("Tratamientos")
                         .HasForeignKey("HistorialMedicoId");
 
                     b.Navigation("HistorialMedico");
+                });
+
+            modelBuilder.Entity("Olimpiadas2023.Models.HistorialMedico", b =>
+                {
+                    b.HasOne("Olimpiadas2023.Models.Personales.Paciente", "Paciente")
+                        .WithOne("HistorialMedicos")
+                        .HasForeignKey("Olimpiadas2023.Models.HistorialMedico", "PacienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Paciente");
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Sesiones.Usuario", b =>
@@ -507,7 +586,7 @@ namespace Olimpiadas2023.Migrations
                     b.Navigation("AreaPaciente");
                 });
 
-            modelBuilder.Entity("Olimpiadas2023.Models.Componentes.HistorialMedico", b =>
+            modelBuilder.Entity("Olimpiadas2023.Models.HistorialMedico", b =>
                 {
                     b.Navigation("ResultadosExamenes");
 
