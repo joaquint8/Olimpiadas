@@ -1,6 +1,6 @@
 ﻿using Olimpiadas2023.Enum;
 using Olimpiadas2023.Models.Sesiones;
-using System.Reflection.Metadata.Ecma335;
+
 
 namespace Olimpiadas2023.Models.Personales
 {

@@ -1,0 +1,36 @@
+﻿@implements IDisposable
+@inject IMessageService message;
+@inject IDbContextFactory<CodigoAzulContext> DbFactory
+@using Olimpiadas2023.Enum;
+@using Olimpiadas2023.Models.Sesiones;
+@page "/AgregarEmpleado"
+
+<h3>AgregarEmpelado</h3>
+
+
+@code {
+    CodigoAzulContext Context;
+    public class EmpleadoViewModel
+    {
+        public TipoCargo TipoCargo { get; set; }
+        public string Horarios { get; set; }
+        public TipoProfesion Profesion { get; set; }
+        public string? Especializacion { get; set; }
+        public Usuario? UsuarioEmpleado { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Init();
+    }
+
+    private async Task Init()
+    {
+        Context = DbFactory.CreateDbContext();
+    }
+
+    public void Dispose()
+    {
+        Context?.Dispose();
+    }
+}
