@@ -3,106 +3,116 @@
 @inject IMessageService message
 
 @page "/Pacientes"
+@using Olimpiadas2023.Pages.Abm
 
 <div style="margin-top: 2em;">
-    <Table DataSource="PacientesVMList" Bordered
-        @bind-SelectedRows="selectedRows"
-        Total="_total"
-        @bind-PageIndex="_pageIndex"
-        @bind-PageSize="_pageSize"
-        Responsive>
+	<Table DataSource="PacientesVMList" Bordered
+		   @bind-SelectedRows="selectedRows"
+		   Total="_total"
+		   @bind-PageIndex="_pageIndex"
+		   @bind-PageSize="_pageSize"
+		   Responsive>
 
-        <TitleTemplate>
-            <GridRow>
-                <GridCol Style="width: 100% !important;flex: none !important;display: flex; justify-content: space-between; max-width:none;" Span="4">
-                    <Title Level="3">Pacientes</Title>
-                </GridCol>
-            </GridRow>
-        </TitleTemplate>
-        <ColumnDefinitions>
-            <PropertyColumn Property="p => p.Documento"
-                            DefaultSortOrder="@SortDirection.Descending"
-                            SorterCompare="@((a, b) => string.Compare(a, b))"/>
-            <PropertyColumn Property="p=>p.Nombre" Sortable/>
-            <PropertyColumn Property="p=>p.Apellido" Sortable />
+		<TitleTemplate>
+			<GridRow>
+				<GridCol Style="width: 100% !important;flex: none !important;display: flex; justify-content: space-between; max-width:none;" Span="4">
+					<Title Level="3">Pacientes</Title>
+				</GridCol>
+			</GridRow>
+		</TitleTemplate>
+		<ColumnDefinitions>
+			<PropertyColumn Property="p => p.Documento"
+							DefaultSortOrder="@SortDirection.Descending"
+							SorterCompare="@((a, b) => string.Compare(a, b))" />
+			<PropertyColumn Property="p=>p.Nombre" Sortable />
+			<PropertyColumn Property="p=>p.Apellido" Sortable />
 			<PropertyColumn Property="p=>p.Telefono" />
-            <PropertyColumn Property="p=>p.Direccion"  />
-            <PropertyColumn Property="p=>p.GrupoSanguineo" Sortable />
+			<PropertyColumn Property="p=>p.Direccion" />
+			<PropertyColumn Property="p=>p.GrupoSanguineo" Sortable />
 			<PropertyColumn Property="p=>p.FechaIngreso" />
 			<PropertyColumn Property="p=>p.FechaAlta" />
-			<PropertyColumn Property="p=>p.Alergias " />
+			<PropertyColumn Property="p => p.Alergias">
+				<Template>
+					<ul>
+						@foreach (var alergia in @context.Alergias)
+						{
+							<li>@alergia.Descripcion</li>
+						}
+					</ul>
+				</Template>
+			</PropertyColumn>
 			@* <PropertyColumn Property="p=>p.Enfermedades" />
 			<PropertyColumn Property="p=>p.Medicamentos" /> *@
-            <ActionColumn Title="Acciones">
-                <Space>
-                    <SpaceItem>
-                        <Popconfirm Style="width: 33.3%;" Title="¿Deseas eliminar este paciente?"
-                                    OnConfirm="()=>Delete(context.Documento)"
-                                    OnCancel="Cancel">
-                            <Button Danger>
-                                Eliminar
-                            </Button>
-                        </Popconfirm>
-                    </SpaceItem>
-@*                    <SpaceItem>
-                        <Popconfirm Style="width: 33.3%;" Title="¿Estas seguro que deseas desasignar el bombero?"
-                                    OnConfirm="()=>Desasignar(context.NroEquipo)"
-                                    OnCancel="Cancel">
-                            <Button Danger>
-                                Desasignar
-                            </Button>
-                        </Popconfirm>
-                    </SpaceItem>*@
-                    <SpaceItem>
+			<ActionColumn Title="Acciones">
+				<Space>
+					<SpaceItem>
+						<Popconfirm Style="width: 33.3%;" Title="¿Deseas eliminar este paciente?"
+									OnConfirm="()=>Delete(context.Documento)"
+									OnCancel="Cancel">
+							<Button Danger>
+								Eliminar
+							</Button>
+						</Popconfirm>
+					</SpaceItem>
+					@*                    <SpaceItem>
+					<Popconfirm Style="width: 33.3%;" Title="¿Estas seguro que deseas desasignar el bombero?"
+					OnConfirm="()=>Desasignar(context.NroEquipo)"
+					OnCancel="Cancel">
+					<Button Danger>
+					Desasignar
+					</Button>
+					</Popconfirm>
+					</SpaceItem>*@
+					<SpaceItem>
 						<Button Type="primary" OnClick="()=>ShowModalEditar(context.Documento)">Editar</Button>
 					</SpaceItem>
-                </Space>
-            </ActionColumn>
-        </ColumnDefinitions>
-    </Table>
-    <div style="display: flex;justify-content: flex-end;margin-top: -3.5em;">
-        <Button OnClick="()=>ShowModalAgregar()">Cargar paciente</Button>
-    </div>
+				</Space>
+			</ActionColumn>
+		</ColumnDefinitions>
+	</Table>
+	<div style="display: flex;justify-content: flex-end;margin-top: -3.5em;">
+		<Button OnClick="()=>ShowModalAgregar()">Cargar paciente</Button>
+	</div>
 </div>
 
 <Modal Footer="null" Title="@("Paciente")"
-       Visible="@_visibleAgregar"
-       OnOk="@HandleOkAgregar"
-       OnCancel="@HandleCancelAgregar">
-       <AgregarPaciente/>
-       <Button Style="margin-right: 134px !important;" Type="@ButtonType.Primary" OnClick="@HandleCancelAgregar">
-            Volver
-       </Button>
+	   Visible="@_visibleAgregar"
+	   OnOk="@HandleOkAgregar"
+	   OnCancel="@HandleCancelAgregar">
+	<AgregarPaciente />
+	<Button Style="margin-right: 134px !important;" Type="@ButtonType.Primary" OnClick="@HandleCancelAgregar">
+		Volver
+	</Button>
 </Modal>
 
 <Modal Title="@("Paciente")"
-       Visible="@_visible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel">
-    <Form Loading="loading" Model="@PacienteVM"
-          LabelColSpan="8"
-          WrapperColSpan="16"
-          OnFinish="OnFinish"
-          OnFinishFailed="OnFinishFailed"
-          @ref="@_form">
+	   Visible="@_visible"
+	   OnOk="@HandleOk"
+	   OnCancel="@HandleCancel">
+	<Form Loading="loading" Model="@PacienteVM"
+		  LabelColSpan="8"
+		  WrapperColSpan="16"
+		  OnFinish="OnFinish"
+		  OnFinishFailed="OnFinishFailed"
+		  @ref="@_form">
 
-        <FormItem Label="Documento">
-            <Input DefaultValue="@PacienteVM.Documento" @bind-Value="@PacienteVM.Documento" />
-        </FormItem>
-        <FormItem Label="Modelo">
+		<FormItem Label="Documento">
+			<Input DefaultValue="@PacienteVM.Documento" @bind-Value="@PacienteVM.Documento" />
+		</FormItem>
+		<FormItem Label="Modelo">
 			<Input DefaultValue="@PacienteVM.Nombre" @bind-Value="@PacienteVM.Nombre" />
-        </FormItem>
-        <FormItem Label="Nro Equipo">
+		</FormItem>
+		<FormItem Label="Nro Equipo">
 			<Input DefaultValue="@PacienteVM.Apellido" @bind-Value="@PacienteVM.Apellido" />
-        </FormItem>
-        <FormItem Label="Nro Serie">
+		</FormItem>
+		<FormItem Label="Nro Serie">
 			<Input DefaultValue="@PacienteVM.Direccion" @bind-Value="@PacienteVM.Direccion" />
-        </FormItem>
-        <FormItem Label="Estado">
+		</FormItem>
+		<FormItem Label="Estado">
 			<EnumSelect DefaultValue="@PacienteVM.Telefono" @bind-Value="@PacienteVM.Telefono" />
-        </FormItem>
+		</FormItem>
 
-    </Form>
+	</Form>
 </Modal>
 
 @code {
@@ -135,8 +145,8 @@
 	public async Task CargarPacienteVM()
 	{
 		PacientesVMList.Clear();
-		var pacienteDB = await Context.Pacientes.Include(p=>p.Alergias).Include(p=>p.Enfermedades)
-		.Include(m=>m.Medicamentos).Include(a=>a.AreaPaciente).ToListAsync();
+		var pacienteDB = await Context.Pacientes.Include(p => p.Alergias).Include(p => p.Enfermedades)
+		.Include(m => m.Medicamentos).Include(a => a.AreaPaciente).ToListAsync();
 
 		foreach (Paciente p in pacienteDB)
 		{
@@ -153,11 +163,11 @@
 					Alergias = p.Alergias,
 					Enfermedades = p.Enfermedades,
 					Medicamentos = p.Medicamentos,
-					AreaAsignada = p.AreaPaciente 
+					AreaAsignada = p.AreaPaciente
 				};
 			PacientesVMList.Add(pacienteViewModel);
 		}
-		
+
 	}
 
 	void OnRowClick(RowData<PacienteViewModel> row)

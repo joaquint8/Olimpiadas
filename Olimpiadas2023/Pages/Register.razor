@@ -106,15 +106,22 @@
         <h1>Registrarse</h1>
     </div>
     <div class="form-contenedor">
-        <div class="@usernameInputClass">
+        <div class="@usuarioInputClase">
             <i class="fa-solid fa-user"></i>
-            <input placeholder="Nombre de usuario" type="text" @bind="username" @bind:event="oninput" @onfocus="ActivateUsernameInput" @onblur="DeactivateUsernameInput" />
+            <input placeholder="Nombre de usuario" type="text" @bind="usuario" @bind:event="oninput" @onfocus="ActivateUsernameInput" @onblur="DeactivateUsernameInput" />
         </div>
-        <div class="@passwordInputClass">
+        <div class="@contraseñaInputClase">
             <i class="fa-solid fa-lock"></i>
-            <input class="input-contraseña" @bind="password" @bind:event="oninput" placeholder="Contraseña" type="@passwordInputType" @onfocus="ActivatePasswordInput" @onblur="DeactivatePasswordInput" />
-            <button class="mostrar-contraseña " @onclick="TogglePasswordVisibility">
-                <i class="@passwordToggleIcon"></i>
+            <input class="input-contraseña" @bind="contraseña" @bind:event="oninput" placeholder="Contraseña" type="@inputContraseñaType" @onfocus="ActivatePasswordInput" @onblur="DeactivatePasswordInput" />
+            <button class="mostrar-contraseña" @onclick="TogglePasswordVisibility">
+                <i class="@cambiarIconoContraseña"></i>
+            </button>
+        </div>
+        <div class="@repetirContraseñaInputClass">
+            <i class="fa-solid fa-lock"></i>
+            <input class="input-contraseña" @bind="contraseñaRepetir" @bind:event="oninput" placeholder="Repetir contraseña" type="@inputContraseñaRepetidaType" @onfocus="ActivatePasswordRepetirInput" @onblur="DeactivatePasswordRepetirInput" />
+            <button class="mostrar-contraseña" @onclick="TogglePasswordRepetirVisibility">
+                <i class="@cambiarIconoContraseña"></i>
             </button>
         </div>
         <div>
@@ -130,52 +137,84 @@
 </div>
 
 @code {
-    private string username = "";
-    private string password = "";
-    private string passwordInputType = "password";
-    private string passwordToggleIcon = "fa-solid fa-eye";
-    private string usernameInputClass = "";
-    private string passwordInputClass = "";
+    private string usuario = "";
+    private string contraseña = "";
+    private string contraseñaRepetir = "";
+    private string inputContraseñaType = "password";
+    private string inputContraseñaRepetidaType = "password";
+    private string cambiarIconoContraseña = "fa-solid fa-eye";
+    private string cambiarIconoContraseñaRepetida = "fa-solid fa-eye";
+    private string usuarioInputClase = "";
+    private string contraseñaInputClase = "";
+    private string repetirContraseñaInputClass = "";
 
     private void ActivateUsernameInput()
     {
-        usernameInputClass = "active-input";
+        usuarioInputClase = "active-input";
     }
 
     private void DeactivateUsernameInput()
     {
-        if (string.IsNullOrEmpty(username))
+        if (string.IsNullOrEmpty(usuario))
         {
-            usernameInputClass = "";
+            usuarioInputClase = "";
         }
     }
 
     private void ActivatePasswordInput()
     {
-        passwordInputClass = "active-input";
+        contraseñaInputClase = "active-input";
     }
 
     private void DeactivatePasswordInput()
     {
-        if (string.IsNullOrEmpty(password))
+        if (string.IsNullOrEmpty(contraseña))
         {
-            passwordInputClass = "";
+            contraseñaInputClase = "";
+        }
+    }
+
+    private void ActivatePasswordRepetirInput()
+    {
+        repetirContraseñaInputClass = "active-input";
+    }
+
+    private void DeactivatePasswordRepetirInput()
+    {
+        if (string.IsNullOrEmpty(contraseña))
+        {
+            repetirContraseñaInputClass = "";
         }
     }
 
     private void TogglePasswordVisibility()
     {
-        if (passwordInputType == "password")
+        if (inputContraseñaType == "password")
         {
-            passwordInputType = "text";
-            passwordToggleIcon = "fa-solid fa-eye-slash";
+            inputContraseñaType = "text";
+            cambiarIconoContraseña = "fa-solid fa-eye-slash";
             ActivatePasswordInput();
         }
         else
         {
-            passwordInputType = "password";
-            passwordToggleIcon = "fa-solid fa-eye";
+            inputContraseñaType = "password";
+            cambiarIconoContraseña = "fa-solid fa-eye";
             DeactivatePasswordInput();
+        }
+    }
+    private void TogglePasswordRepetirVisibility()
+    {
+        if (inputContraseñaRepetidaType == "password")
+        {
+            inputContraseñaRepetidaType = "text";
+            cambiarIconoContraseñaRepetida = "fa-solid fa-eye-slash";
+            ActivatePasswordRepetirInput();
+        }
+        else
+        {
+            inputContraseñaRepetidaType = "password";
+            cambiarIconoContraseñaRepetida = "fa-solid fa-eye";
+            DeactivatePasswordRepetirInput();
         }
     }
 }

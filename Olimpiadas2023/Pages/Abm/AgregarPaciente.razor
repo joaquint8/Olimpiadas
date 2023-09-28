@@ -87,16 +87,16 @@
     {
         <div>
             <FormItem Label="Alergias">
-                <Table Context="Alergias" DataSource="@PacienteVM.Alergias" Bordered>
-                <PropertyColumn Property="c=>c.Descripcion"></PropertyColumn>
-            </Table>
-        </FormItem>
-        <FormItem Label="Nueva Alergia">
-            <Input @bind-Value="@nuevaAlergia" />
-        </FormItem>
-        <FormItem>
-            <Button OnClick="@(() => AgregarAlergia())">Agregar alergia</Button>
-        </FormItem>
+                <Table Context="Alergias" DataSource="PacienteVM.AlergiasList" Bordered>
+                    <PropertyColumn Property="c=>c.Descripcion"></PropertyColumn>
+                </Table>
+            </FormItem>
+            <FormItem Label="Nueva Alergia">
+                <Input @bind-Value="@nuevaAlergia" />
+            </FormItem>
+            <FormItem>
+                <Button OnClick="@(() => AgregarAlergia())">Agregar alergia</Button>
+            </FormItem>
         </div>
     }
     <FormItem Label="Enfermedades">
@@ -107,7 +107,7 @@
     </FormItem>
     <style>
         .ant-col-offset-8 {
-            margin-left: 0px !important;
+        margin-left: 0px !important;
         }
     </style>
     <FormItem Style="width: 100% !important;
@@ -120,26 +120,27 @@
     </FormItem>
 </Form>
 @code {
-
     string searchString;
     IEnumerable<PacienteViewModel> selectedRows;
     List<Paciente>? pacientes { get; set; } = new();
 
     public class PacienteViewModel : PersonaViewModel
     {
-        public List<Alergia> Alergias { get; set; }
+        public List<Alergia> AlergiasList { get; set; } = new();
+
         public DateTime FechaIngreso { get; set; }
         public DateTime FechaAlta { get; set; }
         public List<Enfermedad>? Enfermedades { get; set; }
         public List<Medicamento>? Medicamentos { get; set; }
         public Area? AreaPaciente { get; set; }
-
-        public PacienteViewModel()
-        {
-            Alergias = new List<Alergia>();
-        }
-        
-    } 
+        public string? NuevaAlergia { get; set; }
+    }
+    public class AlergiasVm
+    {
+        public string? Descripcion { get; set; }
+        public PacienteViewModel? PacienteVM { get; set; }
+    }
+    List<Alergia> alergias = new List<Alergia>();
 
     PacienteViewModel PacienteVM = new PacienteViewModel();
     List<PacienteViewModel> PacientesVMList { get; set; } = new();
@@ -162,13 +163,14 @@
         PacienteVM = new();
         Context = DbFactory.CreateDbContext();
     }
+
     public void AgregarAlergia()
     {
         // Convertir el valor de la variable `nuevaAlergia` a un tipo `Alergia`.
         Alergia alergia = ConvertirAlergia(nuevaAlergia);
 
         // Agregar la instancia de la clase `Alergia` a la lista `ListAlergias`.
-        PacienteVM.Alergias.Add(alergia);
+        PacienteVM.AlergiasList.Add(alergia);
     }
 
     public Alergia ConvertirAlergia(string descripcion)
@@ -182,7 +184,6 @@
         // Devolver la instancia de la clase `Alergia`.
         return alergia;
     }
-
     public async void OnFinish(EditContext editContext)
     {
         try
@@ -209,15 +210,20 @@
                     Medicamentos = new(),
                     AreaPaciente = new()
                 };
-            foreach (PacienteViewModel alergias in PacientesVMList)
+
+
+            // Convertir cada alergia del viewmodel a una alergia del model
+            foreach (var alergiaVm in alergias)
             {
-                Paciente? pacienteAlergia = await Context.Pacientes.SingleOrDefaultAsync(a => a.Alergias == alergias.Alergias);
-                Paciente pAlergia = new()
+                Alergia alergia = new Alergia()
                     {
-                        Alergias = alergias.Alergias
+                        Descripcion = alergiaVm.Descripcion
                     };
-                pacientes.Add(pAlergia);
+
+                // Agregar la alergia a la lista de alergias del model
+                alergias.Add(alergia);
             }
+            
             foreach (PacienteViewModel enfermedades in PacientesVMList)
             {
                 Paciente? pacienteEnfermedades = await Context.Pacientes.SingleOrDefaultAsync(e => e.Enfermedades == enfermedades.Enfermedades);
