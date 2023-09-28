@@ -1,0 +1,104 @@
+﻿@implements IDisposable
+@inject IMessageService message;
+@inject IDbContextFactory<CodigoAzulContext> DbFactory
+@page "/habitaciones"
+@using AntDesign
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.EntityFrameworkCore
+@using Olimpiadas2023.Enum
+@using Olimpiadas2023.Models
+@using System.Text.Json
+@using Olimpiadas2023.Models.Componentes
+
+<Form Model="@habitacionVm"
+          OnFinish="OnFinish"
+          OnFinishFailed="OnFinishFailed"
+          LabelColSpan="8"
+          WrapperColSpan="16">
+        <FormItem Label="Numero de habitaciones">
+            <InputNumber @bind-Value="@habitacionVm.NumeroHabitacion" />
+        </FormItem>
+        <FormItem Label="Tipo de habitacon">
+            <EnumSelect TEnum="TipoHabitacion" @bind-Value="@habitacionVm.TipoHabitacion" />
+        </FormItem>
+        <FormItem Label="Estado de la habitacion">
+            <EnumSelect TEnum="EstadoHabitacion" @bind-Value="@habitacionVm.EstadoHabitacion" />
+        </FormItem>
+        <FormItem Label="Numero de habitacion">
+            <InputNumber @bind-Value="@habitacionVm.NumeroHabitacion" />
+        </FormItem>
+        <FormItem Label="Descripcion">
+            <Input @bind-Value="@habitacionVm.Descripcion" />
+        </FormItem>
+        <FormItem WrapperColOffset="8" WrapperColSpan="16">
+            <Button Type="@ButtonType.Primary" HtmlType="submit">
+                Cargar habilitacion
+            </Button>
+        </FormItem>
+</Form>
+
+@code {
+    CodigoAzulContext Context;
+    public class HabitacionVm 
+    {
+        public int NumeroHabitacion { get; set; }
+        public TipoHabitacion TipoHabitacion { get; set; }
+        public EstadoHabitacion EstadoHabitacion { get; set; }
+        public int Capacidad { get; set; }
+        public string? Descripcion { get; set; }
+    }
+    private HabitacionVm habitacionVm = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Init();
+    }
+
+    private async Task Init()
+    {
+        habitacionVm = new();
+        Context = DbFactory.CreateDbContext();
+    }
+
+    private async void OnFinish(EditContext editContext)
+    {
+        try
+        {
+            Habitacion h = new()
+            {
+                    NumeroHabitacion = habitacionVm.NumeroHabitacion,
+                    TipoHabitacion = habitacionVm.TipoHabitacion,
+                    EstadoHabitacion = habitacionVm.EstadoHabitacion,
+                    Capacidad = habitacionVm.Capacidad,
+                    Descripcion = habitacionVm.Descripcion
+            };
+            Context.Habitaciones.Add(h);
+            await Context.SaveChangesAsync();
+
+            await Init();
+            StateHasChanged();
+            await message.Success("Empleado cargado correctamente");
+        }
+        catch (Exception e)
+        {
+            await Init();
+            StateHasChanged();
+            if (e.InnerException != null)
+                await message.Error(e.InnerException.Message, 5);
+            else
+                await message.Error(e.Message, 5);
+
+        }
+    }
+
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(habitacionVm)}");
+    }
+
+    public void Dispose()
+    {
+        Context?.Dispose();
+    }
+    
+}

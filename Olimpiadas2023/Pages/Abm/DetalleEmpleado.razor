@@ -1,0 +1,106 @@
+﻿@implements IDisposable
+@inject IMessageService message;
+@inject IDbContextFactory<CodigoAzulContext> DbFactory
+@page "/AgregarEmpleado"
+@using Olimpiadas2023.Enum
+@using Olimpiadas2023.Models.Sesiones
+
+<Table DataSource="EmpleadosVm" Bordered Responsive Style="min-width: 320px!important;">
+
+    <ColumnDefinitions Context="muestra">
+            <PropertyColumn Property="c=>c.NombreYApellido" Sortable></PropertyColumn>
+            <PropertyColumn Property="c=>c.Documento" Sortable></PropertyColumn>
+            <PropertyColumn Property="c=>c.TipoCargo" Sortable></PropertyColumn>
+            <PropertyColumn Property="c=>c.Profesion" Sortable></PropertyColumn>
+        </ColumnDefinitions>
+</Table>
+<div style="display: flex;justify-content: flex-end;margin-top: -3.5em;">
+    <Button OnClick="()=>ShowModalAgregar()">Agrega Empleado</Button>
+</div>
+<Modal Footer="null" Title="@("Agregar Empleado")"
+       Visible="@_visibleAgregar"
+       OnOk="@HandleOkAgregar"
+       OnCancel="@HandleCancelAgregar">
+    <AgregarEmpelado />
+    <Button Style="margin-right: 100px !important;" Type="@ButtonType.Primary" OnClick="@HandleCancelAgregar">
+        Volver
+    </Button>
+</Modal>
+@code {
+    CodigoAzulContext Context;
+    public class EmpleadoViewModel
+    {
+        public string NombreYApellido { get; set; }
+        public string Direccion { get; set; }
+        public string Documento { get; set; }
+        public TipoGrupoSanguineo GrupoSanguineo { get; set; }
+        public string Telefono { get; set; }
+        public TipoCargo TipoCargo { get; set; }
+        public DateTime HorarioDesde { get; set; }
+        public DateTime HorarioHasta { get; set; }
+        public TipoProfesion Profesion { get; set; }
+        public string? Especializacion { get; set; }
+        public int UsuarioId { get; set; }
+        public Usuario? UsuarioEmpleado { get; set; }
+    }
+    public class UsuarioVM
+    {
+        public int UsuarioId { get; set; }
+        public string Nombre { get; set; }
+        public string Clave { get; set; }
+        public Rol? Rol { get; set; }
+    }
+    private EmpleadoViewModel EmpleadoVM = new();
+    public List<EmpleadoViewModel> EmpleadosVm = new();
+    public bool _visibleAgregar;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Init();
+    }
+
+    private async Task Init()
+    {
+        EmpleadoVM = new();
+        Context = DbFactory.CreateDbContext();
+        await CargarEmpleado();
+    }
+    private async Task CargarEmpleado()
+    {
+        EmpleadosVm = new();
+        var Empleados = await Context.Empleados.ToListAsync();
+        foreach (var e in Empleados)
+        {
+            EmpleadoViewModel em = new()
+                {
+                    NombreYApellido = e.Nombre+" " + e.Apellido,
+                    Documento = e.Documento,
+                    Telefono = e.Telefono,
+                    TipoCargo = e.TipoCargo,
+                    Profesion = e.Profesion
+
+                };
+            EmpleadosVm.Add(em);
+        }
+    }
+    private async void HandleOkAgregar(MouseEventArgs e)
+    {
+        _visibleAgregar = false;
+    }
+    public async void HandleCancelAgregar(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visibleAgregar = false;
+        await Init();
+    }
+    private async void ShowModalAgregar()
+    {
+        _visibleAgregar = true;
+        await Init();
+    }
+    public void Dispose()
+    {
+        Context?.Dispose();
+    }
+}

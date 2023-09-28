@@ -3,14 +3,12 @@
 @inject IDbContextFactory<CodigoAzulContext> DbFactory
 @using Olimpiadas2023.Enum;
 @using Olimpiadas2023.Models.Sesiones;
-@page "/AgregarEmpleado"
 <style>
     .ant-spin-nested-loading{
         width: 100%;
     }
 </style>
 
-<h3>AgregarEmpelado</h3>
 <div style="display:flex;flex-direction:column;align-items:center;width:80%;">
     <Form Model="@EmpleadoVM"
           OnFinish="OnFinish"
