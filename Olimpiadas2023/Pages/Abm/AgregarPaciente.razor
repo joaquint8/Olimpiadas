@@ -1,9 +1,9 @@
-﻿@inject NavigationManager navigationManager
+﻿@implements IDisposable
+@inject NavigationManager navigationManager
 @inject IDbContextFactory<CodigoAzulContext> DbFactory
 @inject IMessageService message;
-@page "/AgregarPacientes"
 @using Olimpiadas2023.Enum;
-
+@page "/PacienteAgregar"
 <style>
     /* tile uploaded pictures */
     .upload-list-inline .ant-upload-list-item {

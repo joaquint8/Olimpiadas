@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Olimpiadas2023.Models;
 
@@ -11,9 +12,11 @@ using Olimpiadas2023.Models;
 namespace Olimpiadas2023.Migrations
 {
     [DbContext(typeof(CodigoAzulContext))]
-    partial class CodigoAzulContextModelSnapshot : ModelSnapshot
+    [Migration("20230928143447_AgregueDataSeed")]
+    partial class AgregueDataSeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

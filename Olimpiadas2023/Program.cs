@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
-using Olimpiadas2023.Data;
 using Olimpiadas2023.Models;
 
 var builder = WebApplication.CreateBuilder(args);
