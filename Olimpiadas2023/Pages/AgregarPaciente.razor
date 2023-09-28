@@ -1,0 +1,206 @@
+﻿@inject NavigationManager navigationManager
+@inject IDbContextFactory<CodigoAzulContext> DbFactory
+@inject IMessageService message;
+@page "/AgregarPacientes"
+
+<style>
+    /* tile uploaded pictures */
+    .upload-list-inline .ant-upload-list-item {
+        float: left;
+        width: 200px;
+        margin-right: 8px;
+    }
+
+    .upload-list-inline [class*='-upload-list-rtl'] .ant-upload-list-item {
+        float: right;
+    }
+
+    .upload-list-inline .ant-upload-animate-enter {
+        animation-name: uploadAnimateInlineIn;
+    }
+
+    .upload-list-inline .ant-upload-animate-leave {
+        animation-name: uploadAnimateInlineOut;
+    }
+
+    #crear-comunicacion {
+        background-color: #C43A3A;
+        color: white;
+        font-size: 20px;
+        font-family: calibri light;
+        border: 0px;
+        border-radius: 8px;
+    }
+
+    #blancoA {
+        width: 100%;
+        padding: 15px;
+    }
+
+    #estilo {
+        border: 1px;
+        border-radius: 8px;
+        background-color: #AFAFAF;
+    }
+
+    #texto {
+        font-size: 20px;
+        font-family: calibri light;
+        Font-Weight: bold;
+    }
+</style>
+
+<Form Model="@PacienteVM"
+      LabelColSpan="8"
+      WrapperColSpan="16"
+      OnFinish="OnFinish"
+      OnFinishFailed="OnFinishFailed">
+    <FormItem Label="Nombre">
+        <Input @bind-Value="@PacienteVM.Nombre" />
+    </FormItem>
+    <FormItem Label="Apellido">
+        <Input @bind-Value="@PacienteVM.Apellido" />
+    </FormItem>
+    <FormItem Label="Documento">
+        <Input @bind-Value="@PacienteVM.Documento" />
+    </FormItem>
+    <FormItem Label="Direccion">
+        <Input @bind-Value="@PacienteVM.Direccion" />
+    </FormItem>
+    <FormItem Label="Telefono">
+        <Input @bind-Value="@PacienteVM.Telefono" />
+    </FormItem>
+    <FormItem Label="Fecha de ingreso">
+        <InputDate @bind-Value="@PacienteVM.FechaIngreso" />
+    </FormItem>
+    <FormItem Label="Fecha de alta">
+        <InputDate @bind-Value="@PacienteVM.FechaAlta" />
+    </FormItem>
+    @*<FormItem Label="Alergias">
+        <Input @bind-Value="@PacienteVM.Alergias" />
+    </FormItem>
+    <FormItem Label="Enfermedades">
+        <Input @bind-Value="@PacienteVM.Enfermedades" />
+    </FormItem>
+    <FormItem Label="Medicamentos">
+        <Input @bind-Value="@PacienteVM.Medicamentos" />
+    </FormItem>*@
+    <style>
+        .ant-col-offset-8 {
+            margin-left:0px !important;
+        }
+    </style>
+    <FormItem Style="width: 100% !important;
+            display: flex !important;
+            justify-content: flex-end !important;
+            align-items: flex-end !important; height:100% !important; margin-bottom: -32px;" WrapperColOffset="8" WrapperColSpan="16">
+        <Button Type="@ButtonType.Primary"  HtmlType="submit">
+            Agregar paciente
+        </Button>
+    </FormItem>
+</Form>
+@code {
+
+    string searchString;
+    IEnumerable<PacienteViewModel> selectedRows;
+    List<Paciente>? pacientes { get; set; } = new();
+    public PacienteViewModel PacienteVM { get; set; } = new();
+
+    List<PacienteViewModel> PacientesVMList { get; set; } = new();
+
+    CodigoAzulContext Context { get; set; }
+
+    int _pageIndex = 1;
+    int _pageSize = 6;
+    int _total = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Init();
+    }
+
+    private async Task Init()
+    {
+        PacienteVM = new();
+        Context = DbFactory.CreateDbContext();
+    }
+
+    public async void OnFinish(EditContext editContext)
+    {
+        try
+        {
+            if (await Context.Pacientes.SingleOrDefaultAsync(c => c.Documento == PacienteVM.Documento) != null)
+            {
+                await message.Error("Número de equipo repetido");
+                return;
+            }
+            PacientesVMList.Clear();
+            var pacienteDB = await Context.Pacientes.ToListAsync();
+                Paciente pacientesCarga = new()
+                    {
+                    Nombre = PacienteVM.Nombre,
+                    Apellido = PacienteVM.Apellido,
+                    Direccion = PacienteVM.Direccion,
+                    Documento = PacienteVM.Documento,
+                    Telefono = PacienteVM.Telefono,
+                    GrupoSanguineo = PacienteVM.GrupoSanguineo,
+                    FechaIngreso = PacienteVM.FechaIngreso,
+                    FechaAlta = PacienteVM.FechaAlta,
+                        Alergias = new(),
+                        Enfermedades = new(),
+                        Medicamentos = new()
+                    };
+            foreach (PacienteViewModel alergias in PacientesVMList)
+            {
+                Paciente? pacienteAlergia = await Context.Pacientes.SingleOrDefaultAsync(a => a.Alergias == alergias.Alergias);
+                Paciente pAlergia = new()
+                    {
+                        Alergias = alergias.Alergias
+                    };
+                pacientes.Add(pAlergia);
+            }
+            foreach (PacienteViewModel enfermedades in PacientesVMList)
+            {
+                Paciente? pacienteEnfermedades = await Context.Pacientes.SingleOrDefaultAsync(e => e.Enfermedades == enfermedades.Enfermedades);
+                Paciente pEnfermedad = new()
+                    {
+                        Enfermedades = enfermedades.Enfermedades
+                    };
+                pacientes.Add(pEnfermedad);
+            }
+            foreach (PacienteViewModel medicamentos in PacientesVMList)
+            {
+                Paciente? pacienteMedicamentos = await Context.Pacientes.SingleOrDefaultAsync(m => m.Medicamentos == medicamentos.Medicamentos);
+                Paciente pMedicamentos = new()
+                    {
+                        Medicamentos = medicamentos.Medicamentos
+                    };
+                pacientes.Add(pMedicamentos);
+            }
+            Context.Pacientes.Add(pacientesCarga);
+            await Context.SaveChangesAsync();
+            await Init();
+            StateHasChanged();
+            await message.Success("Handie agregado correctamente");
+        }
+        catch (Exception ex)
+        {
+            await Init();
+            StateHasChanged();
+            if (ex.InnerException != null)
+                await message.Error(ex.InnerException.Message, 5);
+            else
+                await message.Error(ex.Message, 5);
+        }
+    }
+
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(PacienteVM)}");
+    }
+
+    public void Dispose()
+    {
+        Context?.Dispose();
+    }
+}
