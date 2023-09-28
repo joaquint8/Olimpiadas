@@ -72,7 +72,7 @@
         <Input @bind-Value="@PacienteVM.Telefono" />
     </FormItem>
     <FormItem Label="Fecha de ingreso">
-        <DatePicker TValue="DateTime" ShowTime="@true" OnChange="OnChange" @bind-Value="@PacienteVM.FechaIngreso" />
+        <DatePicker TValue="DateTime" ShowTime="@true" OnChange="@OnChange" @bind-Value="@PacienteVM.FechaIngreso" />
     </FormItem>
     <FormItem Label="Fecha de alta">
         <DatePicker TValue="DateTime" ShowTime="@true" OnChange="OnChange" @bind-Value="@PacienteVM.FechaAlta" />
@@ -80,26 +80,44 @@
     <FormItem Label="Tipo estado licencia">
         <EnumSelect TEnum="TipoGrupoSanguineo" @bind-Value="@PacienteVM.GrupoSanguineo" />
     </FormItem>
-
-    @*<FormItem Label="Alergias">
-        <Input @bind-Value="@PacienteVM.Alergias" />
+    <FormItem Label="¿Padece de alguna alergia?">
+        <Switch @bind-Checked="switchValue" />
     </FormItem>
+    @if (switchValue == true)
+    {
+        <FormItem Label="Nueva Alergia">
+            <Input @bind-Value="ListAlergias" />
+        </FormItem>
+        <FormItem>
+            <Button OnClick="@AgregarAlergia">Agregar alergia</Button>
+        </FormItem>
+        <div>
+            <Table Context="Alergias" DataSource="ListAlergias" Bordered>
+            <PropertyColumn Property="c=>c.Alergias"></PropertyColumn>
+            <ActionColumn Title="Acciones">
+                <Template>
+                    <a OnClick="() => deleteRowAlergias(Paciente.Alergias)">Eliminar</a>
+                </Template>
+            </ActionColumn>
+        </Table>
+        </div>
+    }
     <FormItem Label="Enfermedades">
         <Input @bind-Value="@PacienteVM.Enfermedades" />
     </FormItem>
     <FormItem Label="Medicamentos">
         <Input @bind-Value="@PacienteVM.Medicamentos" />
-    </FormItem>*@
+    </FormItem>
     <style>
         .ant-col-offset-8 {
-            margin-left:0px !important;
+            margin-left: 0px !important;
         }
     </style>
     <FormItem Style="width: 100% !important;
             display: flex !important;
             justify-content: flex-end !important;
             align-items: flex-end !important; height:100% !important; margin-bottom: -32px;" WrapperColOffset="8" WrapperColSpan="16">
-        <Button Type="@ButtonType.Primary"  HtmlType="submit">
+        <Button Type="@ButtonType.Primary" HtmlType="submit">
             Agregar paciente
         </Button>
     </FormItem>
@@ -109,15 +127,17 @@
     string searchString;
     IEnumerable<PacienteViewModel> selectedRows;
     List<Paciente>? pacientes { get; set; } = new();
-    public PacienteViewModel PacienteVM { get; set; } = new();
-
+    public PacienteViewModel PacienteVM = new PacienteViewModel();
+    public List<PacienteViewModel> ListAlergias { get; set; } = new();
     List<PacienteViewModel> PacientesVMList { get; set; } = new();
-
+    private string nuevaAlergia = "";
     CodigoAzulContext Context { get; set; }
-
+    bool switchValue = false;
     int _pageIndex = 1;
     int _pageSize = 6;
     int _total = 0;
+
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -129,6 +149,18 @@
         PacienteVM = new();
         Context = DbFactory.CreateDbContext();
     }
+
+    public async Task AgregarAlergia()
+    {
+        PacienteViewModel dp = new()
+            {
+                Alergias = PacienteVM.Alergias,
+
+            };
+        PacientesVMList.Add(dp);
+        StateHasChanged();
+    }
+
 
     public async void OnFinish(EditContext editContext)
     {
@@ -187,7 +219,7 @@
             await Context.SaveChangesAsync();
             await Init();
             StateHasChanged();
-            await message.Success("Paciente agregado correctamente");
+            await message.Success("Paciente cargado correctamente");
         }
         catch (Exception ex)
         {
@@ -208,6 +240,10 @@
     {
         Console.WriteLine($"Selected Time: {args.Date}");
         Console.WriteLine($"Formatted Selected Time: {args.DateString}");
+    }
+    void deleteRowAlergias(string Documento)
+    {
+        PacientesVMList = PacientesVMList.Where(d => d.Documento != Documento).ToList();
     }
     public void Dispose()
     {
