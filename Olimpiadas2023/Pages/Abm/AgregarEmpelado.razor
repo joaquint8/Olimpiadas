@@ -4,21 +4,101 @@
 @using Olimpiadas2023.Enum;
 @using Olimpiadas2023.Models.Sesiones;
 @page "/AgregarEmpleado"
+<style>
+    .ant-spin-nested-loading{
+        width: 100%;
+    }
+</style>
 
 <h3>AgregarEmpelado</h3>
+<div style="display:flex;flex-direction:column;align-items:center;width:80%;">
+    <Form Model="@EmpleadoVM"
+          OnFinish="OnFinish"
+          OnFinishFailed="OnFinishFailed"
+          LabelColSpan="8"
+          WrapperColSpan="16">
+        <FormItem Label="Nombre">
+            <Input @bind-Value="@EmpleadoVM.Nombre" />
+        </FormItem>
+        <FormItem Label="Apellido">
+            <Input @bind-Value="@EmpleadoVM.Apellido" />
+        </FormItem>
+        <FormItem Label="Direccion">
+            <Input @bind-Value="@EmpleadoVM.Direccion" />
+        </FormItem>
+        <FormItem Label="Documento">
+            <Input @bind-Value="@EmpleadoVM.Documento" />
+        </FormItem>
+        <FormItem Label="Grupo Sanguineo">
+            <EnumSelect TEnum="TipoGrupoSanguineo" @bind-Value="@EmpleadoVM.GrupoSanguineo" />
+        </FormItem>
+        <FormItem Label="Telefono">
+            <Input @bind-Value="@EmpleadoVM.Telefono" />
+        </FormItem>
+        <FormItem Label="Cargo del empleado">
+            <EnumSelect TEnum="TipoCargo" @bind-Value="@EmpleadoVM.TipoCargo" />
+        </FormItem>
+        <FormItem Label="Horarios desde">
+            <DatePicker TValue="DateTime" ShowTime="@true" OnChange="OnChange" @bind-Value="@EmpleadoVM.HorarioDesde" />
+        </FormItem>
+        <FormItem Label="Horarios Hasta">
+            <DatePicker TValue="DateTime" ShowTime="@true" OnChange="OnChange" @bind-Value="@EmpleadoVM.HorarioHasta" />
+        </FormItem>
+        <FormItem Label="Profesion del Empleado">
+            <EnumSelect TEnum="TipoProfesion" @bind-Value="@EmpleadoVM.Profesion" />
+        </FormItem>
+        <FormItem Label="Especializacion">
+            <Input @bind-Value="@EmpleadoVM.Especializacion" />
+        </FormItem>
+        <FormItem Label="Asignar empleado">
+            <Select TItem="UsuarioVM"
+                    TItemValue="int"
+                    DataSource="@usuariosVm"
+            @bind-Value="@EmpleadoVM.UsuarioId"
+                    LabelName="@nameof(UsuarioVM.Nombre)"
+                    ValueName="@nameof(UsuarioVM.UsuarioId)"
+                    Placeholder="Selecione el bombero"
+                    DefaultActiveFirstOption="false"
+                    AllowClear="true"
+                    EnableSearch>
+            </Select>
+        </FormItem>
+        <FormItem WrapperColOffset="8" WrapperColSpan="16">
+            <Button Type="@ButtonType.Primary" HtmlType="submit">
+                Cargar empleado
+            </Button>
+        </FormItem>
+    </Form>
+</div>
 
 
 @code {
     CodigoAzulContext Context;
     public class EmpleadoViewModel
     {
+        public string Nombre { get; set; }
+        public string Apellido { get; set; }
+        public string Direccion { get; set; }
+        public string Documento { get; set; }
+        public TipoGrupoSanguineo GrupoSanguineo { get; set; }
+        public string Telefono { get; set; }
         public TipoCargo TipoCargo { get; set; }
-        public string Horarios { get; set; }
+        public DateTime HorarioDesde { get; set; }
+        public DateTime HorarioHasta { get; set; }
         public TipoProfesion Profesion { get; set; }
         public string? Especializacion { get; set; }
+        public int UsuarioId { get; set; }
         public Usuario? UsuarioEmpleado { get; set; }
     }
-
+    public class UsuarioVM
+    {
+        public int UsuarioId { get; set; }
+        public string Nombre { get; set; }
+        public string Clave { get; set; }
+        public Rol? Rol { get; set; }
+    } 
+    private EmpleadoViewModel EmpleadoVM = new();
+    public List<UsuarioVM> usuariosVm = new();
     protected override async Task OnInitializedAsync()
     {
         await Init();
@@ -26,7 +106,72 @@
 
     private async Task Init()
     {
+        EmpleadoVM=new();
         Context = DbFactory.CreateDbContext();
+        await CargarUsuario();
+    }
+    private async Task CargarUsuario()
+    {
+        var UsuariosTodos = await Context.Set<Usuario>().ToListAsync();
+        foreach (var u in UsuariosTodos)
+        {
+            UsuarioVM usuarios = new()
+            {
+                UsuarioId= u.UsuarioId,
+                Nombre = u.Nombre,
+                Clave = u.Clave,
+                Rol = u.Rol
+            };
+            usuariosVm.Add(usuarios);
+        }
+    }
+    private async void OnFinish(EditContext editContext)
+    {
+        try
+        {
+            var UsuarioAsignado = await Context.Set<Usuario>().SingleOrDefaultAsync(u => u.UsuarioId == EmpleadoVM.UsuarioId);
+            Empleado EmpleadoNW = new()
+              {
+                    Nombre = EmpleadoVM.Nombre,
+                    Apellido = EmpleadoVM.Apellido,
+                    Direccion= EmpleadoVM.Direccion,
+                    Documento = EmpleadoVM.Documento,
+                    GrupoSanguineo = EmpleadoVM.GrupoSanguineo,
+                    Telefono = EmpleadoVM.Telefono,
+                    TipoCargo = EmpleadoVM.TipoCargo,
+                    HorarioDesde = EmpleadoVM.HorarioDesde,
+                    HorarioHasta = EmpleadoVM.HorarioHasta,
+                    Profesion = EmpleadoVM.Profesion,
+                    Especializacion = EmpleadoVM.Especializacion,
+                    UsuarioEmpleado = UsuarioAsignado
+
+              };
+            Context.Empleados.Add(EmpleadoNW);
+            await Context.SaveChangesAsync();
+
+            await Init();
+            StateHasChanged();
+            await message.Success("Empleado cargado correctamente");
+        }
+        catch (Exception e)
+        {
+            await Init();
+            StateHasChanged();
+            if (e.InnerException != null)
+                await message.Error(e.InnerException.Message, 5);
+            else
+                await message.Error(e.Message, 5);
+
+        }
+    }
+    private void OnChange(DateTimeChangedEventArgs args)
+    {
+        Console.WriteLine($"Selected Time: {args.Date}");
+        Console.WriteLine($"Formatted Selected Time: {args.DateString}");
+    }
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(EmpleadoVM)}");
     }
 
     public void Dispose()
