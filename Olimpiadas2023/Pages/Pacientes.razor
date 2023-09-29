@@ -31,9 +31,9 @@
 			<PropertyColumn Property="p=>p.GrupoSanguineo" Sortable />
 			<PropertyColumn Property="p=>p.FechaIngreso" />
 			<PropertyColumn Property="p=>p.FechaAlta" />
-			<PropertyColumn Property="p => p.Alergias">
+			<PropertyColumn Property="p => p.AlergiasList">
 				<Template>
-					@foreach (var alergia in @context.Alergias)
+					@foreach (var alergia in @context.AlergiasList)
 					{
 						<li>
 							- @alergia.Descripcion
@@ -42,9 +42,9 @@
 					}
 					
 				</Template>
-			</PropertyColumn><PropertyColumn Property="p => p.Enfermedades">
+			</PropertyColumn><PropertyColumn Property="p => p.EnfermedadesList">
 				<Template>
-					@foreach (var enfermedad in @context.Enfermedades)
+					@foreach (var enfermedad in @context.EnfermedadesList)
 					{
 						<li>
 							- @enfermedad.Descripcion
@@ -53,9 +53,9 @@
 					
 				</Template>
 			</PropertyColumn>
-			<PropertyColumn Property="p => p.Medicamentos">
+			<PropertyColumn Property="p => p.EnfermedadesList">
 				<Template>
-					@foreach (var medicamento in @context.Medicamentos)
+					@foreach (var medicamento in @context.EnfermedadesList)
 					{
 						<li>
 							- @medicamento.Descripcion
@@ -144,13 +144,13 @@
 			<InputDate DefaultValue="@PacienteVM.FechaAlta" @bind-Value="@PacienteVM.FechaAlta" />
 		</FormItem>
 		<FormItem Label="Alergias">
-			<Input DefaultValue="@PacienteVM.Alergias" @bind-Value="@PacienteVM.Alergias" />
+			<Input DefaultValue="@PacienteVM.Descripcion" @bind-Value="@PacienteVM.Descripcion" />
 		</FormItem>
 		<FormItem Label="Enfermedades">
-			<Input DefaultValue="@PacienteVM.Enfermedades" @bind-Value="@PacienteVM.Enfermedades" />
+			<Input DefaultValue="@PacienteVM.Descripcion" @bind-Value="@PacienteVM.Descripcion" />
 		</FormItem>
 		<FormItem Label="Medicamentos">
-			<Input DefaultValue="@PacienteVM.Medicamentos" @bind-Value="@PacienteVM.Medicamentos" />
+			<Input DefaultValue="@PacienteVM.Descripcion" @bind-Value="@PacienteVM.Descripcion" />
 		</FormItem>
 
 	</Form>
@@ -158,6 +158,17 @@
 
 @code {
 
+	public class PacienteViewModel : PersonaViewModel
+	{
+		public List<Alergia> AlergiasList { get; set; } = new();
+		public List<Enfermedad> EnfermedadesList { get; set; } = new();
+		public List<Medicamento> MedicamentosList { get; set; } = new();
+		public DateTime FechaIngreso { get; set; }
+		public DateTime FechaAlta { get; set; }
+		public Area? AreaPaciente { get; set; }
+		public string? NuevaAlergia { get; set; }
+		public string? Descripcion { get; set; }
+	}
 	string searchString;
 	IEnumerable<PacienteViewModel> selectedRows;
 	List<Paciente>? pacientes { get; set; } = new();
@@ -166,6 +177,31 @@
 	List<PacienteViewModel> PacientesVMList { get; set; } = new();
 
 	CodigoAzulContext Context { get; set; }
+
+	public class AlergiasVm
+	{
+		public string? Descripcion { get; set; }
+		public PacienteViewModel? PacienteVM { get; set; }
+	}
+	public class MedicamentoVm
+	{
+		public string? Descripcion { get; set; }
+		public PacienteViewModel? PacienteVM { get; set; }
+	}
+	public class EnfermedadVm
+	{
+		public string? Descripcion { get; set; }
+		public PacienteViewModel? PacienteVM { get; set; }
+	}
+	List<AlergiasVm> ListaAlergiasVm = new();
+
+	List<EnfermedadVm> ListaEnfermedadesVm = new();
+
+	List<MedicamentoVm> ListaMedicamentosVm = new();
+
+
+
+
 
 	int _pageIndex = 1;
 	int _pageSize = 6;
@@ -201,10 +237,10 @@
 					GrupoSanguineo = p.GrupoSanguineo,
 					FechaIngreso = p.FechaIngreso,
 					FechaAlta = p.FechaAlta,
-					Alergias = p.Alergias,
-					Enfermedades = p.Enfermedades,
-					Medicamentos = p.Medicamentos,
-					AreaAsignada = p.AreaPaciente
+					AlergiasList = p.Alergias,
+					EnfermedadesList = p.Enfermedades,
+					MedicamentosList = p.Medicamentos,
+					AreaPaciente = p.AreaPaciente
 				};
 			PacientesVMList.Add(pacienteViewModel);
 		}
@@ -274,6 +310,36 @@
 			paciente.Alergias = new();
 			paciente.Enfermedades = new();
 			paciente.Medicamentos = new();
+			foreach (var alergiaVm in ListaAlergiasVm)
+			{
+				Alergia alergia = new Alergia()
+					{
+						Descripcion = alergiaVm.Descripcion
+					};
+
+				// Agregar la alergia a la lista de alergias del model
+				paciente.Alergias.Add(alergia);
+			}
+			foreach (var enfermedadVm in ListaEnfermedadesVm)
+			{
+				Enfermedad enfermedad = new Enfermedad()
+					{
+						Descripcion = enfermedadVm.Descripcion
+					};
+
+				// Agregar la alergia a la lista de alergias del model
+				paciente.Enfermedades.Add(enfermedad);
+			}
+			foreach (var medicamentoVm in ListaMedicamentosVm)
+			{
+				Medicamento medicamento = new Medicamento()
+					{
+						Descripcion = medicamentoVm.Descripcion
+					};
+
+				// Agregar la alergia a la lista de alergias del model
+				paciente.Medicamentos.Add(medicamento);
+			}
 			await Context.SaveChangesAsync();
 			await Init();
 			StateHasChanged();
