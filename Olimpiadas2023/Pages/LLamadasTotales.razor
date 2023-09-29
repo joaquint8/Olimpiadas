@@ -7,7 +7,7 @@
 <div>
     <Button Type="primary" @onclick="_=>open()">Cargar LLamada</Button>
     <Drawer Width="500" Closable="true" Visible="visible" Placement="right" Title='("Cargar Llamadas")' OnClose="_=>close()">
-        <LLamadasTotales />
+        <LlamasReportes />
     </Drawer>
 </div>
 <Table DataSource="@llamadaViewModels" Bordered Responsive Style="min-width:100% !important;">
@@ -36,6 +36,9 @@
     }
 
     List<LlamadaViewModel>? llamadaViewModels = new();
+
+    public EventCallback OnClose { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         await Init();
@@ -68,12 +71,13 @@
                 };
             llamadaViewModels.Add(llmVM);
         }
-
+        
     }
 
     void open()
     {
         this.visible = true;
+
     }
 
     void close()

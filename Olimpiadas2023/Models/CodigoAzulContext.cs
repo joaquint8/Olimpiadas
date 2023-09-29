@@ -15,7 +15,7 @@ namespace Olimpiadas2023.Models
         public DbSet<Area> Areas { get; set; }
         public DbSet<Usuario>  Usuarios { get; set; }
         public DbSet<Rol> Roles { get; set; }
-        public DbSet<LLamada> Llamadas { get; set; }
+        public DbSet<Llamada> Llamadas { get; set; }
         public CodigoAzulContext(DbContextOptions<CodigoAzulContext> options)
            : base(options)
         {

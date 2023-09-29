@@ -5,7 +5,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace Olimpiadas2023.Models.Componentes
 {
-    public class LLamada
+    public class Llamada
     {
         public int LlamadaId { get; set; }
         public TipoLLamada tipoLLamada { get; set; }

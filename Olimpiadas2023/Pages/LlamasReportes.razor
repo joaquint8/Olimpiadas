@@ -3,6 +3,7 @@
 @inject IDbContextFactory<CodigoAzulContext> DbFactory
 @using Olimpiadas2023.Enum;
 
+
 <div style="display:flex;flex-direction:column;align-items:center;width:80%;">
     <Form Model="@llamadaViewModel"
           OnFinish="OnFinish"
@@ -167,7 +168,7 @@
             var paciente = await Context.Pacientes.SingleOrDefaultAsync(p => p.PersonaId == llamadaViewModel.PacienteId);
             var Empleado = await Context.Empleados.SingleOrDefaultAsync(p => p.PersonaId == llamadaViewModel.EmpleadoId);
             var Habitacion = await Context.Habitaciones.SingleOrDefaultAsync(p => p.HabitacionId == llamadaViewModel.HabitacionId);
-            LLamada llamadaNew = new()
+            Llamada llamadaNew = new()
                 {
                     tipoLLamada = llamadaViewModel.tipoLLamada,
                     Fecha = llamadaViewModel.Fecha,
