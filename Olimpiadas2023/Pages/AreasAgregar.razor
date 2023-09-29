@@ -16,19 +16,7 @@
         <FormItem Label="Tipo de acceso">
             <Input @bind-Value="@areasVm.TipoAcceso" />
         </FormItem>
-        @* <FormItem Label="Asignar habitaciones">
-            <Select TItem="HabitacionVm"
-                    TItemValue="int"
-                    DataSource="@HabitacionesVm"
-                    @bind-Value="@areasVm.HabitacionId"
-                    LabelName="@nameof(HabitacionVm.NombreHabitacion)"
-                    ValueName="@nameof(HabitacionVm.HabitacionId)"
-                    Placeholder="Selecione el bombero"
-                    DefaultActiveFirstOption="false"
-                    AllowClear="true"
-                    EnableSearch>
-            </Select>
-        </FormItem> *@
+        
         <FormItem WrapperColOffset="8" WrapperColSpan="16">
             <Button Type="@ButtonType.Primary" HtmlType="submit">
                 Cargar Area
@@ -68,26 +56,9 @@
     {
         areasVm = new();
         Context = DbFactory.CreateDbContext();
-        // await Cargarhabitaciones();
+        
     }
-    // private async Task Cargarhabitaciones()
-    // {
-    //     HabitacionesVm = new();
-    //     var habitaciones = await Context.Habitaciones.ToListAsync();
-    //     foreach (var h in habitaciones)
-    //     {
-    //         HabitacionVm hVM = new()
-    //             {
-    //                 HabitacionId = h.HabitacionId,
-    //                 NombreHabitacion = h.NombreHabitacion,
-    //                 TipoHabitacion = h.TipoHabitacion,
-    //                 EstadoHabitacion = h.EstadoHabitacion,
-    //                 Capacidad = h.Capacidad,
-    //                 Descripcion = h.Descripcion
-    //             };
-    //         HabitacionesVm.Add(hVM);
-    //     }
-    // }
+   
     private async void OnFinish(EditContext editContext)
     {
         try
@@ -97,21 +68,9 @@
                 {
                     TipoArea = areasVm.TipoArea,
                     TipoAcceso = areasVm.TipoAcceso,
-                    // Habitaciones = new()
+                    
                 };
-            // foreach (var a in HabitacionesVm)
-            // {
-            //     Habitacion habi = new()
-            //         {
-            //             NombreHabitacion = a.NombreHabitacion,
-            //             TipoHabitacion = a.TipoHabitacion,
-            //             EstadoHabitacion = a.EstadoHabitacion,
-            //             Capacidad = a.Capacidad,
-            //             Descripcion = a.Descripcion
-
-            //         };
-            //     AreaCargar.Habitaciones.Add(habi);
-            // }
+           
             Context.Areas.Add(AreaCargar);    
             await Context.SaveChangesAsync();
 

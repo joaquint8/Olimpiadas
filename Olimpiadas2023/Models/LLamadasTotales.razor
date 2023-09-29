@@ -1,0 +1,88 @@
+﻿@implements IDisposable
+@inject IMessageService message
+@inject IDbContextFactory<CodigoAzulContext> DbFactory
+@page "/LlamadasGenerales"
+@using Olimpiadas2023.Enum;
+<h3>LLamadasTotales</h3>
+<div>
+    <Button Type="primary" @onclick="_=>open()">Cargar LLamada</Button>
+    <Drawer Width="500" Closable="true" Visible="visible" Placement="right" Title='("Cargar Llamadas")' OnClose="_=>close()">
+        <LLamadasTotales />
+    </Drawer>
+</div>
+<Table DataSource="@llamadaViewModels" Bordered Responsive Style="min-width:100% !important;">
+         <ColumnDefinitions>
+             <PropertyColumn Property="c=>c.Habitacion.NombreHabitacion"></PropertyColumn>
+             <PropertyColumn Property="c=>c.Habitacion.AreaAasignada.TipoArea"></PropertyColumn>
+             <PropertyColumn Property="c=>c.Paciente.Nombre"></PropertyColumn>
+             <PropertyColumn Property="c=>c.origenLlamado"></PropertyColumn>
+         </ColumnDefinitions>
+     </Table>
+
+
+     @code {
+    CodigoAzulContext Context;
+    bool visible = false;
+
+    public class LlamadaViewModel
+    {
+        public TipoLLamada tipoLLamada { get; set; }
+        public DateTime Fecha { get; set; }
+        public TipoOrigenLlamado origenLlamado { get; set; }
+        public bool Atendio { get; set; }
+        public Paciente? Paciente { get; set; }
+        public Empleado? Empleado { get; set; }
+        public Habitacion? Habitacion { get; set; }
+    }
+
+    List<LlamadaViewModel>? llamadaViewModels = new();
+    protected override async Task OnInitializedAsync()
+    {
+        await Init();
+    }
+
+    private async Task Init()
+    {
+        Context = DbFactory.CreateDbContext();
+        await CargarLlamadas();
+    }
+
+    private async Task CargarLlamadas()
+    {
+        llamadaViewModels = new();
+        var Llamada = await Context.Llamadas.Include(l => l.HabitacionLlamada)
+        .ThenInclude(h => h.AreaAasignada)
+        .Include(p => p.PacienteAsignado).ToListAsync();
+
+        foreach (var i in Llamada)
+        {
+            LlamadaViewModel llmVM = new()
+                {
+                    tipoLLamada = i.tipoLLamada,
+                    Fecha = i.Fecha,
+                    origenLlamado = i.origenLlamado,
+                    Atendio = i.Atendio,
+                    Paciente = i.PacienteAsignado,
+                    Empleado = i.EmpleadoAsignado,
+                    Habitacion = i.HabitacionLlamada
+                };
+            llamadaViewModels.Add(llmVM);
+        }
+
+    }
+
+    void open()
+    {
+        this.visible = true;
+    }
+
+    void close()
+    {
+        this.visible = false;
+    }
+    public void Dispose()
+    {
+        Context?.Dispose();
+    }
+
+}

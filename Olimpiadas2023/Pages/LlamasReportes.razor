@@ -1,0 +1,218 @@
+﻿@implements IDisposable
+@inject IMessageService message
+@inject IDbContextFactory<CodigoAzulContext> DbFactory
+@using Olimpiadas2023.Enum;
+
+<div style="display:flex;flex-direction:column;align-items:center;width:80%;">
+    <Form Model="@llamadaViewModel"
+          OnFinish="OnFinish"
+          OnFinishFailed="OnFinishFailed"
+          LabelColSpan="8"
+          WrapperColSpan="16">
+        <FormItem Label="fecha de carga">
+            <DatePicker TValue="DateTime" ShowTime="@true" OnChange="OnChange" @bind-Value="@llamadaViewModel.Fecha" />
+        </FormItem>
+        <FormItem Label="Tipo Llamada">
+            <EnumSelect TEnum="TipoLLamada" @bind-Value="@llamadaViewModel.tipoLLamada" />
+        </FormItem>
+        <FormItem Label="Origen del llamadao">
+            <EnumSelect TEnum="TipoOrigenLlamado" @bind-Value="@llamadaViewModel.origenLlamado" />
+        </FormItem>
+        <FormItem Label="Atendio el llamado">
+            <Checkbox @bind-Checked="@llamadaViewModel.Atendio" Disabled="@disabled">
+                @($"{(isChecked ? "Check" : "Uncheck")}-{(disabled ? "Disable" : "Enable")}")
+            </Checkbox>
+        </FormItem>
+        
+        <FormItem Label="Asignar paciente">
+            <Select TItem="PacienteViewModel"
+                    TItemValue="int"
+                    DataSource="@PacientesViewModels"
+            @bind-Value="@llamadaViewModel.PacienteId"
+                    LabelName="@nameof(PacienteViewModel.NombreYApellido)"
+                    ValueName="@nameof(PacienteViewModel.PersonaId)"
+                    Placeholder="Selecione el paciente"
+                    DefaultActiveFirstOption="false"
+                    AllowClear="true"
+                    EnableSearch>
+            </Select>
+        </FormItem>
+
+        <FormItem Label="Asignar habitacion">
+            <Select TItem="HabitacionVm"
+                    TItemValue="int"
+                    DataSource="@HabitacionViewModels"
+                    @bind-Value="@llamadaViewModel.HabitacionId"
+                    LabelName="@nameof(HabitacionVm.NombreHabitacion)"
+                    ValueName="@nameof(HabitacionVm.HabitacionId)"
+                    DefaultActiveFirstOption="false"
+                    AllowClear="true"
+                    EnableSearch>
+            </Select>
+        </FormItem>
+        <FormItem Label="Asignar empleado">
+            <Select TItem="EmpleadoViewModel"
+                    TItemValue="int"
+                    DataSource="@EmpleadosViewModels"
+                    @bind-Value="@llamadaViewModel.EmpleadoId"
+                    LabelName="@nameof(PacienteViewModel.NombreYApellido)"
+                    ValueName="@nameof(PacienteViewModel.PersonaId)"
+                    Placeholder="Selecione el empleado"
+                    DefaultActiveFirstOption="false"
+                    AllowClear="true"
+                    EnableSearch>
+            </Select>
+        </FormItem>
+        <FormItem WrapperColOffset="8" WrapperColSpan="16">
+            <Button Type="@ButtonType.Primary" HtmlType="submit">
+                Cargar Llamada
+            </Button>
+        </FormItem>
+    </Form>
+</div>
+
+
+@code {
+    CodigoAzulContext Context;
+
+    public class LlamadaViewModel
+    {
+        public TipoLLamada tipoLLamada { get; set; }
+        public DateTime Fecha { get; set; }
+        public TipoOrigenLlamado origenLlamado { get; set; }
+        public bool Atendio { get; set; }
+        public int PacienteId { get; set; }
+        public int EmpleadoId { get; set; }
+        public int HabitacionId { get; set; }
+    }
+
+    public class PacienteViewModel
+    {
+
+        public int PersonaId { get; set; }
+        public string? NombreYApellido {get; set;}
+    }
+    public class EmpleadoViewModel
+    {
+        public int PersonaId { get; set; }
+        public string? NombreYApellido { get; set; }
+
+    }
+    public class HabitacionVm
+    {
+        public int HabitacionId { get; set; }
+        public string NombreHabitacion { get; set; }
+
+
+    }
+    private LlamadaViewModel llamadaViewModel = new();
+    List<PacienteViewModel> PacientesViewModels = new();
+    List<EmpleadoViewModel> EmpleadosViewModels = new();
+    List<HabitacionVm> HabitacionViewModels = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Init();
+    }
+
+    private async Task Init()
+    {
+        llamadaViewModel = new();
+        Context = DbFactory.CreateDbContext();
+        await CargarPersonas();
+
+    }
+    private async Task CargarPersonas()
+    {
+        PacientesViewModels = new();
+        EmpleadosViewModels = new();
+        HabitacionViewModels = new();
+        var Pacientes = await Context.Pacientes.ToListAsync();
+        var Empleados = await Context.Empleados.ToListAsync();
+        var habitaciones = await Context.Habitaciones.ToListAsync();
+        foreach (var p in Pacientes)
+        {
+            PacienteViewModel pas = new()
+                {
+                    PersonaId = p.PersonaId,
+                    NombreYApellido = p.Nombre + " " + p.Apellido
+                };
+            PacientesViewModels.Add(pas);
+        }
+        foreach (var p in Empleados)
+        {
+            EmpleadoViewModel emp = new()
+                {
+                    PersonaId = p.PersonaId,
+                    NombreYApellido = p.Nombre + " " + p.Apellido
+                };
+            EmpleadosViewModels.Add(emp);
+        }
+        foreach (var p in habitaciones)
+        {
+            HabitacionVm habi = new()
+            {
+                HabitacionId = p.HabitacionId,
+                NombreHabitacion = p.NombreHabitacion
+            };
+            HabitacionViewModels.Add(habi);
+        }
+
+    }
+
+    private async void OnFinish(EditContext editContext)
+    {
+        try
+        {
+            var paciente = await Context.Pacientes.SingleOrDefaultAsync(p => p.PersonaId == llamadaViewModel.PacienteId);
+            var Empleado = await Context.Empleados.SingleOrDefaultAsync(p => p.PersonaId == llamadaViewModel.EmpleadoId);
+            var Habitacion = await Context.Habitaciones.SingleOrDefaultAsync(p => p.HabitacionId == llamadaViewModel.HabitacionId);
+            LLamada llamadaNew = new()
+                {
+                    tipoLLamada = llamadaViewModel.tipoLLamada,
+                    Fecha = llamadaViewModel.Fecha,
+                    origenLlamado = llamadaViewModel.origenLlamado,
+                    Atendio = llamadaViewModel.Atendio,
+                    PacienteAsignado = paciente,
+                    EmpleadoAsignado=Empleado,
+                    HabitacionLlamada = Habitacion
+                };
+            Context.Llamadas.Add(llamadaNew);
+            await Context.SaveChangesAsync();
+
+            await Init();
+            StateHasChanged();
+            await message.Success("Empleado cargado correctamente");
+        }
+        catch (Exception e)
+        {
+            await Init();
+            StateHasChanged();
+            if (e.InnerException != null)
+                await message.Error(e.InnerException.Message, 5);
+            else
+                await message.Error(e.Message, 5);
+
+        }
+    }
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(llamadaViewModel)}");
+    }
+    private void OnChange(DateTimeChangedEventArgs args)
+    {
+        Console.WriteLine($"Selected Time: {args.Date}");
+        Console.WriteLine($"Formatted Selected Time: {args.DateString}");
+    }
+    bool isChecked = true;
+    bool disabled = false;
+
+    void ToggleDisable()
+    {
+        disabled = !disabled;
+    }
+    public void Dispose()
+    {
+        Context?.Dispose();
+    }
+}
