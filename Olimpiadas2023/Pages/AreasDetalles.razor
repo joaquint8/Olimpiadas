@@ -7,33 +7,36 @@
 <div>
     <Button Type="primary" @onclick="_=>open()">Cargar Habitacion</Button>
     <Drawer Width="500" Closable="true" Visible="visible" Placement="right" Title='("Cargar Habitacion")' OnClose="_=>close()">
-        <HabitacionAgregar/>
+        <HabitacionAgregar />
     </Drawer>
 </div>
 <div>
     <h4>Areas del hospital disponibles</h4>
-    @foreach (var a in GetAreas)
+    @foreach (var area in GetAreas)
     {
-        <Card Title="@a.AreaAasignada.TipoArea.ToString()" Style="width:300px;">
+        <Card Title="@area.TipoArea.ToString()" Style="width:300px;">
             <Extra>
                 <a>More</a>
             </Extra>
             <Body>
-                <Table DataSource="GetAreas" Bordered Responsive Style="min-width:100% !important;">
+                <Table DataSource="@HabitacionesFiltradas(area.AreaId)" Bordered Responsive Style="min-width:100% !important;">
                          <ColumnDefinitions Context="muestra">
-                             <PropertyColumn Property="c=>c.NombreHabitacion" ></PropertyColumn>
-                         <PropertyColumn Property="c=>c.Capacidad" ></PropertyColumn>
-                         <PropertyColumn Property="c=>c.EstadoHabitacion" ></PropertyColumn>
-                     </ColumnDefinitions>
-                 </Table>
-            </Body>
-        </Card>
+                             <PropertyColumn Property="c=>c.NombreHabitacion"></PropertyColumn>
+                             <PropertyColumn Property="c=>c.Capacidad"></PropertyColumn>
+                             <PropertyColumn Property="c=>c.EstadoHabitacion"></PropertyColumn>
+                         </ColumnDefinitions>
+
+                     </Table>
+
+                 </Body>
+             </Card>
     }
 </div>
 
 @code {
     CodigoAzulContext Context;
-    List<Habitacion> GetAreas = new();
+    List<Area> GetAreas = new();
+    List<Habitacion> GetHabitaciones = new();
     bool visible = false;
 
     void open()
@@ -54,10 +57,14 @@
     private async Task Init()
     {
         Context = DbFactory.CreateDbContext();
-        GetAreas = await Context.Habitaciones.Include(a => a.AreaAasignada).ToListAsync();
+        GetAreas = await Context.Areas.ToListAsync();
+        GetHabitaciones = await Context.Habitaciones.ToListAsync();
     }
 
-
+    private List<Habitacion> HabitacionesFiltradas(int areaIdBuscar)
+    {
+        return Context.Habitaciones.Where(x => x.AreaId == areaIdBuscar).ToList();
+    }
     public void Dispose()
     {
         Context?.Dispose();
