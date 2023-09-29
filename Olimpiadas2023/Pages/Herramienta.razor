@@ -1,45 +1,39 @@
-﻿@implements IDisposable
-@inject IMessageService message;
+﻿@using Olimpiadas2023.Enum
+@implements IDisposable
+@inject IMessageService message
 @inject IDbContextFactory<CodigoAzulContext> DbFactory
-@page "/habitaciones"
-@using AntDesign
-@using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.EntityFrameworkCore
-@using Olimpiadas2023.Enum
-@using Olimpiadas2023.Models
-@using System.Text.Json
-@using Olimpiadas2023.Models.Componentes
-
+@page "/Habitaciones"
 <Form Model="@habitacionVm"
-          OnFinish="OnFinish"
-          OnFinishFailed="OnFinishFailed"
-          LabelColSpan="8"
-          WrapperColSpan="16">
-        <FormItem Label="Numero de habitaciones">
-            <InputNumber @bind-Value="@habitacionVm.NumeroHabitacion" />
-        </FormItem>
-        <FormItem Label="Tipo de habitacon">
-            <EnumSelect TEnum="TipoHabitacion" @bind-Value="@habitacionVm.TipoHabitacion" />
-        </FormItem>
-        <FormItem Label="Estado de la habitacion">
-            <EnumSelect TEnum="EstadoHabitacion" @bind-Value="@habitacionVm.EstadoHabitacion" />
-        </FormItem>
-        <FormItem Label="Numero de habitacion">
-            <InputNumber @bind-Value="@habitacionVm.NumeroHabitacion" />
-        </FormItem>
-        <FormItem Label="Descripcion">
-            <Input @bind-Value="@habitacionVm.Descripcion" />
-        </FormItem>
-        <FormItem WrapperColOffset="8" WrapperColSpan="16">
-            <Button Type="@ButtonType.Primary" HtmlType="submit">
-                Cargar habilitacion
-            </Button>
-        </FormItem>
+      OnFinish="OnFinish"
+      OnFinishFailed="OnFinishFailed"
+      LabelColSpan="8"
+      WrapperColSpan="16">
+    <FormItem Label="Numero de habitaciones">
+        <AntDesign.InputNumber @bind-Value="habitacionVm.NumeroHabitacion"></AntDesign.InputNumber>
+    </FormItem>
+    <FormItem Label="Tipo de habitacon">
+        <EnumSelect TEnum="TipoHabitacion" @bind-Value="@habitacionVm.TipoHabitacion" />
+    </FormItem>
+    <FormItem Label="Estado de la habitacion">
+        <EnumSelect TEnum="EstadoHabitacion" @bind-Value="@habitacionVm.EstadoHabitacion" />
+    </FormItem>
+    <FormItem Label="Numero de habitacion">
+        <AntDesign.InputNumber @bind-Value="habitacionVm.Capacidad"></AntDesign.InputNumber>
+    </FormItem>
+    <FormItem Label="Descripcion">
+        <Input @bind-Value="@habitacionVm.Descripcion" />
+    </FormItem>
+    <FormItem WrapperColOffset="8" WrapperColSpan="16">
+        <Button Type="@ButtonType.Primary" HtmlType="submit">
+            Cargar habitacion
+        </Button>
+    </FormItem>
 </Form>
 
+
 @code {
-    CodigoAzulContext Context;
-    public class HabitacionVm 
+    CodigoAzulContext? Context;
+    public class HabitacionVm
     {
         public int NumeroHabitacion { get; set; }
         public TipoHabitacion TipoHabitacion { get; set; }
@@ -65,19 +59,19 @@
         try
         {
             Habitacion h = new()
-            {
+                {
                     NumeroHabitacion = habitacionVm.NumeroHabitacion,
                     TipoHabitacion = habitacionVm.TipoHabitacion,
                     EstadoHabitacion = habitacionVm.EstadoHabitacion,
                     Capacidad = habitacionVm.Capacidad,
                     Descripcion = habitacionVm.Descripcion
-            };
+                };
             Context.Habitaciones.Add(h);
             await Context.SaveChangesAsync();
 
             await Init();
             StateHasChanged();
-            await message.Success("Empleado cargado correctamente");
+            await message.Success("Habitacion se a cargado correctamente");
         }
         catch (Exception e)
         {
@@ -100,5 +94,5 @@
     {
         Context?.Dispose();
     }
-    
+
 }
