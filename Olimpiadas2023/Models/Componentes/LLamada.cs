@@ -13,8 +13,8 @@ namespace Olimpiadas2023.Models.Componentes
         public TipoOrigenLlamado origenLlamado { get; set; }
         public bool Atendio { get; set; }
 
-        public int AreaId { get; set; }
-        public Area? Area { get; set; }
+        public int HabitacionId { get; set; }
+        public Habitacion? HabitacionLlamada { get; set; }
 
         [InverseProperty("PacienteArea")]
         public int PersonaId { get; set; }

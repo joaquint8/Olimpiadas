@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Olimpiadas2023.Models;
 
@@ -11,9 +12,11 @@ using Olimpiadas2023.Models;
 namespace Olimpiadas2023.Migrations
 {
     [DbContext(typeof(CodigoAzulContext))]
-    partial class CodigoAzulContextModelSnapshot : ModelSnapshot
+    [Migration("20230929161325_AgregandoTablaLLamada")]
+    partial class AgregandoTablaLLamada
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,6 +187,9 @@ namespace Olimpiadas2023.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LlamadaId"));
 
+                    b.Property<int>("AreaId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Atendio")
                         .HasColumnType("bit");
 
@@ -192,9 +198,6 @@ namespace Olimpiadas2023.Migrations
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("HabitacionId")
-                        .HasColumnType("int");
 
                     b.Property<int?>("PacienteAsignadoPersonaId")
                         .HasColumnType("int");
@@ -210,9 +213,9 @@ namespace Olimpiadas2023.Migrations
 
                     b.HasKey("LlamadaId");
 
-                    b.HasIndex("EmpleadoId");
+                    b.HasIndex("AreaId");
 
-                    b.HasIndex("HabitacionId");
+                    b.HasIndex("EmpleadoId");
 
                     b.HasIndex("PacienteAsignadoPersonaId");
 
@@ -526,15 +529,15 @@ namespace Olimpiadas2023.Migrations
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.LLamada", b =>
                 {
-                    b.HasOne("Olimpiadas2023.Models.Personales.Empleado", "EmpleadoAsignado")
+                    b.HasOne("Olimpiadas2023.Models.Componentes.Area", "Area")
                         .WithMany()
-                        .HasForeignKey("EmpleadoId")
+                        .HasForeignKey("AreaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Olimpiadas2023.Models.Componentes.Habitacion", "HabitacionLlamada")
+                    b.HasOne("Olimpiadas2023.Models.Personales.Empleado", "EmpleadoAsignado")
                         .WithMany()
-                        .HasForeignKey("HabitacionId")
+                        .HasForeignKey("EmpleadoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -542,9 +545,9 @@ namespace Olimpiadas2023.Migrations
                         .WithMany()
                         .HasForeignKey("PacienteAsignadoPersonaId");
 
-                    b.Navigation("EmpleadoAsignado");
+                    b.Navigation("Area");
 
-                    b.Navigation("HabitacionLlamada");
+                    b.Navigation("EmpleadoAsignado");
 
                     b.Navigation("PacienteAsignado");
                 });
