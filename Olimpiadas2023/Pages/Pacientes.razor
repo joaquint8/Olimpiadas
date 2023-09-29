@@ -31,9 +31,9 @@
 			<PropertyColumn Property="p=>p.GrupoSanguineo" Sortable />
 			<PropertyColumn Property="p=>p.FechaIngreso" />
 			<PropertyColumn Property="p=>p.FechaAlta" />
-			<PropertyColumn Property="p => p.AlergiasList">
+			<PropertyColumn Property="p => p.Medicamentos">
 				<Template>
-					@foreach (var alergia in @context.AlergiasList)
+					@foreach (var alergia in @context.Alergias)
 					{
 						<li>
 							- @alergia.Descripcion
@@ -42,9 +42,9 @@
 					}
 					
 				</Template>
-			</PropertyColumn><PropertyColumn Property="p => p.EnfermedadesList">
+			</PropertyColumn><PropertyColumn Property="p => p.Enfermedades">
 				<Template>
-					@foreach (var enfermedad in @context.EnfermedadesList)
+					@foreach (var enfermedad in @context.Enfermedades)
 					{
 						<li>
 							- @enfermedad.Descripcion
@@ -53,9 +53,9 @@
 					
 				</Template>
 			</PropertyColumn>
-			<PropertyColumn Property="p => p.EnfermedadesList">
+			<PropertyColumn Property="p => p.Medicamentos">
 				<Template>
-					@foreach (var medicamento in @context.EnfermedadesList)
+					@foreach (var medicamento in @context.Medicamentos)
 					{
 						<li>
 							- @medicamento.Descripcion
@@ -144,13 +144,13 @@
 			<InputDate DefaultValue="@PacienteVM.FechaAlta" @bind-Value="@PacienteVM.FechaAlta" />
 		</FormItem>
 		<FormItem Label="Alergias">
-			<Input DefaultValue="@PacienteVM.Descripcion" @bind-Value="@PacienteVM.Descripcion" />
+			<Input DefaultValue="@PacienteVM.Alergias" @bind-Value="@PacienteVM.Alergias" />
 		</FormItem>
 		<FormItem Label="Enfermedades">
-			<Input DefaultValue="@PacienteVM.Descripcion" @bind-Value="@PacienteVM.Descripcion" />
+			<Input DefaultValue="@PacienteVM.Enfermedades" @bind-Value="@PacienteVM.Enfermedades" />
 		</FormItem>
 		<FormItem Label="Medicamentos">
-			<Input DefaultValue="@PacienteVM.Descripcion" @bind-Value="@PacienteVM.Descripcion" />
+			<Input DefaultValue="@PacienteVM.Medicamentos" @bind-Value="@PacienteVM.Medicamentos" />
 		</FormItem>
 
 	</Form>
@@ -160,9 +160,9 @@
 
 	public class PacienteViewModel : PersonaViewModel
 	{
-		public List<Alergia> AlergiasList { get; set; } = new();
-		public List<Enfermedad> EnfermedadesList { get; set; } = new();
-		public List<Medicamento> MedicamentosList { get; set; } = new();
+		public List<Alergia> Alergias { get; set; } = new();
+		public List<Enfermedad> Enfermedades { get; set; } = new();
+		public List<Medicamento> Medicamentos { get; set; } = new();
 		public DateTime FechaIngreso { get; set; }
 		public DateTime FechaAlta { get; set; }
 		public Area? AreaPaciente { get; set; }
@@ -177,7 +177,7 @@
 	List<PacienteViewModel> PacientesVMList { get; set; } = new();
 
 	CodigoAzulContext Context { get; set; }
-
+	public AlergiasVm alergiasVm { get; set; } = new();
 	public class AlergiasVm
 	{
 		public string? Descripcion { get; set; }
@@ -237,9 +237,9 @@
 					GrupoSanguineo = p.GrupoSanguineo,
 					FechaIngreso = p.FechaIngreso,
 					FechaAlta = p.FechaAlta,
-					AlergiasList = p.Alergias,
-					EnfermedadesList = p.Enfermedades,
-					MedicamentosList = p.Medicamentos,
+					Alergias = p.Alergias,
+					Enfermedades = p.Enfermedades,
+					Medicamentos = p.Medicamentos,
 					AreaPaciente = p.AreaPaciente
 				};
 			PacientesVMList.Add(pacienteViewModel);
