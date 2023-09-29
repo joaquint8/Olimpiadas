@@ -33,12 +33,35 @@
 			<PropertyColumn Property="p=>p.FechaAlta" />
 			<PropertyColumn Property="p => p.Alergias">
 				<Template>
-					<ul>
-						@foreach (var alergia in @context.Alergias)
-						{
-							<li>@alergia.Descripcion</li>
-						}
-					</ul>
+					@foreach (var alergia in @context.Alergias)
+					{
+						<li>
+							- @alergia.Descripcion
+						</li>
+						
+					}
+					
+				</Template>
+			</PropertyColumn><PropertyColumn Property="p => p.Enfermedades">
+				<Template>
+					@foreach (var enfermedad in @context.Enfermedades)
+					{
+						<li>
+							- @enfermedad.Descripcion
+						</li>
+					}
+					
+				</Template>
+			</PropertyColumn>
+			<PropertyColumn Property="p => p.Medicamentos">
+				<Template>
+					@foreach (var medicamento in @context.Medicamentos)
+					{
+						<li>
+							- @medicamento.Descripcion
+						</li>
+					}
+
 				</Template>
 			</PropertyColumn>
 			@* <PropertyColumn Property="p=>p.Enfermedades" />
@@ -99,17 +122,35 @@
 		<FormItem Label="Documento">
 			<Input DefaultValue="@PacienteVM.Documento" @bind-Value="@PacienteVM.Documento" />
 		</FormItem>
-		<FormItem Label="Modelo">
+		<FormItem Label="Nombre">
 			<Input DefaultValue="@PacienteVM.Nombre" @bind-Value="@PacienteVM.Nombre" />
 		</FormItem>
-		<FormItem Label="Nro Equipo">
+		<FormItem Label="Apellido">
 			<Input DefaultValue="@PacienteVM.Apellido" @bind-Value="@PacienteVM.Apellido" />
 		</FormItem>
-		<FormItem Label="Nro Serie">
+		<FormItem Label="Direccion">
 			<Input DefaultValue="@PacienteVM.Direccion" @bind-Value="@PacienteVM.Direccion" />
 		</FormItem>
-		<FormItem Label="Estado">
-			<EnumSelect DefaultValue="@PacienteVM.Telefono" @bind-Value="@PacienteVM.Telefono" />
+		<FormItem Label="Telefono">
+			<Input DefaultValue="@PacienteVM.Telefono" @bind-Value="@PacienteVM.Telefono" />
+		</FormItem>
+		<FormItem Label="GrupoSanguineo">
+			<EnumSelect DefaultValue="@PacienteVM.GrupoSanguineo" @bind-Value="@PacienteVM.GrupoSanguineo" />
+		</FormItem>
+		<FormItem Label="FechaIngreso">
+			<InputDate DefaultValue="@PacienteVM.FechaIngreso" @bind-Value="@PacienteVM.FechaIngreso" />
+		</FormItem>
+		<FormItem Label="FechaAlta">
+			<InputDate DefaultValue="@PacienteVM.FechaAlta" @bind-Value="@PacienteVM.FechaAlta" />
+		</FormItem>
+		<FormItem Label="Alergias">
+			<Input DefaultValue="@PacienteVM.Alergias" @bind-Value="@PacienteVM.Alergias" />
+		</FormItem>
+		<FormItem Label="Enfermedades">
+			<Input DefaultValue="@PacienteVM.Enfermedades" @bind-Value="@PacienteVM.Enfermedades" />
+		</FormItem>
+		<FormItem Label="Medicamentos">
+			<Input DefaultValue="@PacienteVM.Medicamentos" @bind-Value="@PacienteVM.Medicamentos" />
 		</FormItem>
 
 	</Form>

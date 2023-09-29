@@ -87,24 +87,89 @@
     {
         <div>
             <FormItem Label="Alergias">
-                <Table Context="Alergias" DataSource="PacienteVM.AlergiasList" Bordered>
+                <Input @bind-Value="@PacienteVM.Descripcion" />
+            </FormItem>
+
+            <FormItem Label="Alergias">
+                <Table Context="Alergias" DataSource="ListaAlergiasVm" Bordered>
                     <PropertyColumn Property="c=>c.Descripcion"></PropertyColumn>
+                    <ActionColumn Title="Acciones">
+                        <Popconfirm Title="¿Quieres borrar esta alergia?"
+                                OnConfirm="()=> deleteRowAlergias(Alergias.Descripcion)"
+                                OkText="Si"
+                                CancelText="No"
+                                Style="display: flex;justify-content: center;align-items: center;">
+                            <i class="fa-solid fa-trash" style="color: #e90c0c;cursor: pointer;"></i>
+                        </Popconfirm>
+                    </ActionColumn>
                 </Table>
             </FormItem>
-            <FormItem Label="Nueva Alergia">
-                <Input @bind-Value="@nuevaAlergia" />
-            </FormItem>
+
             <FormItem>
                 <Button OnClick="@(() => AgregarAlergia())">Agregar alergia</Button>
             </FormItem>
         </div>
     }
-    <FormItem Label="Enfermedades">
-        <Input @bind-Value="@PacienteVM.Enfermedades" />
+    <FormItem Label="¿Padece de alguna enfermedad?">
+        <Switch @bind-Checked="switchValueEnf" />
     </FormItem>
-    <FormItem Label="Medicamentos">
-        <Input @bind-Value="@PacienteVM.Medicamentos" />
+    @if (switchValueEnf == true)
+    {
+        <div>
+            <FormItem Label="Enfermedades">
+                <Input @bind-Value="@PacienteVM.Descripcion" />
+            </FormItem>
+
+            <FormItem Label="Enfermedades">
+                <Table Context="Enfermedades" DataSource="ListaEnfermedadesVm" Bordered>
+                    <PropertyColumn Property="c=>c.Descripcion"></PropertyColumn>
+                    <ActionColumn Title="Acciones">
+                        <Popconfirm Title="¿Quieres borrar esta Enfermedad?"
+                                OnConfirm="()=> deleteRowAlergias(Enfermedades.Descripcion)"
+                                OkText="Si"
+                                CancelText="No"
+                                Style="display: flex;justify-content: center;align-items: center;">
+                            <i class="fa-solid fa-trash" style="color: #e90c0c;cursor: pointer;"></i>
+                        </Popconfirm>
+                    </ActionColumn>
+                </Table>
+            </FormItem>
+
+            <FormItem>
+                <Button OnClick="@(() => AgregarEnfermedad())">Agregar Enfermedad</Button>
+            </FormItem>
+        </div>
+    }
+    <FormItem Label="¿Utiliza algun medicamento?">
+        <Switch @bind-Checked="switchValueMed" />
     </FormItem>
+    @if (switchValueMed == true)
+    {
+        <div>
+            <FormItem Label="Medicamentos">
+                <Input @bind-Value="@PacienteVM.Descripcion" />
+            </FormItem>
+
+            <FormItem Label="Medicamentos">
+                <Table Context="Medicamentos" DataSource="ListaMedicamentosVm" Bordered>
+                    <PropertyColumn Property="c=>c.Descripcion"></PropertyColumn>
+                    <ActionColumn Title="Acciones">
+                        <Popconfirm Title="¿Quieres borrar este medicamento?"
+                                OnConfirm="()=> deleteRowAlergias(Medicamentos.Descripcion)"
+                                OkText="Si"
+                                CancelText="No"
+                                Style="display: flex;justify-content: center;align-items: center;">
+                            <i class="fa-solid fa-trash" style="color: #e90c0c;cursor: pointer;"></i>
+                        </Popconfirm>
+                    </ActionColumn>
+                </Table>
+            </FormItem>
+
+            <FormItem>
+                <Button OnClick="@(() => AgregarMedicamentos())">Agregar alergia</Button>
+            </FormItem>
+        </div>
+    }
     <style>
         .ant-col-offset-8 {
         margin-left: 0px !important;
@@ -127,26 +192,42 @@
     public class PacienteViewModel : PersonaViewModel
     {
         public List<Alergia> AlergiasList { get; set; } = new();
-
+        public List<Enfermedad> EnfermedadesList { get; set; } = new();
+        public List<Medicamento> MedicamentosList { get; set; } = new();
         public DateTime FechaIngreso { get; set; }
         public DateTime FechaAlta { get; set; }
-        public List<Enfermedad>? Enfermedades { get; set; }
-        public List<Medicamento>? Medicamentos { get; set; }
         public Area? AreaPaciente { get; set; }
         public string? NuevaAlergia { get; set; }
+        public string? Descripcion{ get; set; }    
     }
     public class AlergiasVm
     {
         public string? Descripcion { get; set; }
         public PacienteViewModel? PacienteVM { get; set; }
     }
-    List<Alergia> alergias = new List<Alergia>();
+    public class MedicamentoVm
+    {
+        public string? Descripcion { get; set; }
+        public PacienteViewModel? PacienteVM { get; set; }
+    }
+    public class EnfermedadVm
+    {
+        public string? Descripcion { get; set; }
+        public PacienteViewModel? PacienteVM { get; set; }
+    }
+    List<AlergiasVm> ListaAlergiasVm = new ();
+
+    List<EnfermedadVm> ListaEnfermedadesVm = new();
+
+    List<MedicamentoVm> ListaMedicamentosVm = new();
 
     PacienteViewModel PacienteVM = new PacienteViewModel();
     List<PacienteViewModel> PacientesVMList { get; set; } = new();
     private string nuevaAlergia;
     CodigoAzulContext Context { get; set; }
     bool switchValue = false;
+    bool switchValueEnf = false;
+    bool switchValueMed = false;
     int _pageIndex = 1;
     int _pageSize = 6;
     int _total = 0;
@@ -166,11 +247,33 @@
 
     public void AgregarAlergia()
     {
-        // Convertir el valor de la variable `nuevaAlergia` a un tipo `Alergia`.
-        Alergia alergia = ConvertirAlergia(nuevaAlergia);
+        AlergiasVm aVm = new()
+            {
+                Descripcion = PacienteVM.Descripcion
+            };
+        ListaAlergiasVm.Add(aVm);
+        StateHasChanged();
 
-        // Agregar la instancia de la clase `Alergia` a la lista `ListAlergias`.
-        PacienteVM.AlergiasList.Add(alergia);
+    }
+    public void AgregarEnfermedad()
+    {
+        EnfermedadVm eVm = new()
+            {
+                Descripcion = PacienteVM.Descripcion
+            };
+        ListaEnfermedadesVm.Add(eVm);
+        StateHasChanged();
+
+    }
+    public void AgregarMedicamentos()
+    {
+        MedicamentoVm mVm = new()
+            {
+                Descripcion = PacienteVM.Descripcion
+            };
+        ListaMedicamentosVm.Add(mVm);
+        StateHasChanged();
+
     }
 
     public Alergia ConvertirAlergia(string descripcion)
@@ -213,7 +316,7 @@
 
 
             // Convertir cada alergia del viewmodel a una alergia del model
-            foreach (var alergiaVm in alergias)
+            foreach (var alergiaVm in ListaAlergiasVm)
             {
                 Alergia alergia = new Alergia()
                     {
@@ -221,26 +324,27 @@
                     };
 
                 // Agregar la alergia a la lista de alergias del model
-                alergias.Add(alergia);
+                pacientesCarga.Alergias.Add(alergia);
             }
-            
-            foreach (PacienteViewModel enfermedades in PacientesVMList)
+            foreach (var enfermedadVm in ListaEnfermedadesVm)
             {
-                Paciente? pacienteEnfermedades = await Context.Pacientes.SingleOrDefaultAsync(e => e.Enfermedades == enfermedades.Enfermedades);
-                Paciente pEnfermedad = new()
+                Enfermedad enfermedad = new Enfermedad()
                     {
-                        Enfermedades = enfermedades.Enfermedades
+                        Descripcion = enfermedadVm.Descripcion
                     };
-                pacientes.Add(pEnfermedad);
+
+                // Agregar la alergia a la lista de alergias del model
+                pacientesCarga.Enfermedades.Add(enfermedad);
             }
-            foreach (PacienteViewModel medicamentos in PacientesVMList)
+            foreach (var medicamentoVm in ListaMedicamentosVm)
             {
-                Paciente? pacienteMedicamentos = await Context.Pacientes.SingleOrDefaultAsync(m => m.Medicamentos == medicamentos.Medicamentos);
-                Paciente pMedicamentos = new()
+                Medicamento medicamento = new Medicamento()
                     {
-                        Medicamentos = medicamentos.Medicamentos
+                        Descripcion = medicamentoVm.Descripcion
                     };
-                pacientes.Add(pMedicamentos);
+
+                // Agregar la alergia a la lista de alergias del model
+                pacientesCarga.Medicamentos.Add(medicamento);
             }
             Context.Pacientes.Add(pacientesCarga);
             await Context.SaveChangesAsync();
@@ -268,9 +372,17 @@
         Console.WriteLine($"Selected Time: {args.Date}");
         Console.WriteLine($"Formatted Selected Time: {args.DateString}");
     }
-    void deleteRowAlergias(string Documento)
+    void deleteRowAlergias(string Alergia)
     {
-        PacientesVMList = PacientesVMList.Where(d => d.Documento != Documento).ToList();
+        ListaAlergiasVm = ListaAlergiasVm.Where(d => d.Descripcion != Alergia).ToList();
+    }
+    void deleteRowEnfermedades(string Enfermedades)
+    {
+        ListaEnfermedadesVm = ListaEnfermedadesVm.Where(d => d.Descripcion != Enfermedades).ToList();
+    }
+    void deleteRowMedicamentos(string Medicamentos)
+    {
+        ListaMedicamentosVm = ListaMedicamentosVm.Where(d => d.Descripcion != Medicamentos).ToList();
     }
     public void Dispose()
     {
