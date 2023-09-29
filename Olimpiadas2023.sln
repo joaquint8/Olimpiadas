@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34018.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Olimpiadas2023", "Olimpiadas2023\Olimpiadas2023.csproj", "{28634EE8-5970-4D50-952E-FF0B8147E5D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VistaMovil", "VistaMovil\VistaMovil.csproj", "{EA97BA1F-E7AF-4D52-8514-910863AE7344}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{28634EE8-5970-4D50-952E-FF0B8147E5D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28634EE8-5970-4D50-952E-FF0B8147E5D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28634EE8-5970-4D50-952E-FF0B8147E5D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA97BA1F-E7AF-4D52-8514-910863AE7344}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA97BA1F-E7AF-4D52-8514-910863AE7344}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA97BA1F-E7AF-4D52-8514-910863AE7344}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA97BA1F-E7AF-4D52-8514-910863AE7344}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

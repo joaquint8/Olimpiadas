@@ -1,8 +1,20 @@
 ﻿@inherits LayoutComponentBase
+<PageTitle>Doctorsys</PageTitle>
 
-<PageTitle>Olimpiadas2023</PageTitle>
+<style>
+    #components-layout-demo-fixed .logo {
+        width: 120px;
+        height: 31px;
+        background: rgba(255, 255, 255, 0.2);
+        margin: 16px 24px 16px 0;
+        float: left;
+    }
 
-<div class="page">
+    .site-layout .site-layout-background {
+        background: #fff;
+    }
+</style>
+@*<div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
@@ -16,4 +28,40 @@
             @Body
         </article>
     </main>
-</div>
+</div>*@
+
+<Layout Style="height: 100vh;">
+    <Header Style="position: fixed; z-index: 1; width: 100%;">
+        <div class="logo" />
+        <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Horizontal" DefaultSelectedKeys=@(new[]{"1"})>
+            <MenuItem Key="1">nav 1</MenuItem>
+            <MenuItem Key="2">nav 2</MenuItem>
+            <MenuItem Key="3">nav 3</MenuItem>
+            <SubMenu Key="sub1" TitleTemplate=@sub1Title>
+                <MenuItemGroup Key="g1" Title="Item 1">
+                    <MenuItem Key="4">Option 1</MenuItem>
+                    <MenuItem Key="5">Option 2</MenuItem>
+                </MenuItemGroup>
+            </SubMenu>
+        </Menu>
+    </Header>
+    <Content Class="site-layout" Style="padding:0 50px; margin-top: 64px; ">
+        <Breadcrumb Style=" margin: 16px 0;">
+            <BreadcrumbItem>Home</BreadcrumbItem>
+            <BreadcrumbItem>List</BreadcrumbItem>
+            <BreadcrumbItem>App</BreadcrumbItem>
+        </Breadcrumb>
+        <div class="site-layout-background" style="padding: 24px; min-height: 380px ">
+            @Body
+        </div>
+    </Content>
+    <Footer Style="text-align: center;">Olimpiadas ©2023 Creado por EESTN1</Footer>
+</Layout>
+
+@code{
+    RenderFragment sub1Title =
+    @<span>
+        <Icon Type="mail" Theme="outline"></Icon>
+        <span>Navigation One</span>
+    </span>;
+}

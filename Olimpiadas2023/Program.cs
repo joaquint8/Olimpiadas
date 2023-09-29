@@ -24,6 +24,47 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+//Creacion de API
+// Agregamos servicios al contenedor
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    // El middleware HSTS predeterminado agrega la cabecera Strict-Transport-Security.
+    app.UseHsts();
+}
+
+
+// Agrega servicios al contenedor.
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+
+// Habilita CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:5000/VistaMovil") // Reemplaza con la URL de tu ProyectoB
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseCors("AllowSpecificOrigin");
+
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+
 
 app.UseHttpsRedirection();
 
