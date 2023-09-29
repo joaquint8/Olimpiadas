@@ -31,7 +31,7 @@
 			<PropertyColumn Property="p=>p.GrupoSanguineo" Sortable />
 			<PropertyColumn Property="p=>p.FechaIngreso" />
 			<PropertyColumn Property="p=>p.FechaAlta" />
-			<PropertyColumn Property="p => p.Medicamentos">
+			<PropertyColumn Property="p => p.Alergias">
 				<Template>
 					@foreach (var alergia in @context.Alergias)
 					{
@@ -144,13 +144,13 @@
 			<InputDate DefaultValue="@PacienteVM.FechaAlta" @bind-Value="@PacienteVM.FechaAlta" />
 		</FormItem>
 		<FormItem Label="Alergias">
-			<Input DefaultValue="@PacienteVM.Alergias" @bind-Value="@PacienteVM.Alergias" />
+			<Input DefaultValue="@alergiasVm.Descripcion" @bind-Value="@alergiasVm.Descripcion" />
 		</FormItem>
 		<FormItem Label="Enfermedades">
-			<Input DefaultValue="@PacienteVM.Enfermedades" @bind-Value="@PacienteVM.Enfermedades" />
+			<Input DefaultValue="@enfermedadVm.Descripcion" @bind-Value="@enfermedadVm.Descripcion" />
 		</FormItem>
 		<FormItem Label="Medicamentos">
-			<Input DefaultValue="@PacienteVM.Medicamentos" @bind-Value="@PacienteVM.Medicamentos" />
+			<Input DefaultValue="@medicamentoVm.Descripcion" @bind-Value="@medicamentoVm.Descripcion" />
 		</FormItem>
 
 	</Form>
@@ -165,8 +165,6 @@
 		public List<Medicamento> Medicamentos { get; set; } = new();
 		public DateTime FechaIngreso { get; set; }
 		public DateTime FechaAlta { get; set; }
-		public Area? AreaPaciente { get; set; }
-		public string? NuevaAlergia { get; set; }
 		public string? Descripcion { get; set; }
 	}
 	string searchString;
@@ -178,6 +176,8 @@
 
 	CodigoAzulContext Context { get; set; }
 	public AlergiasVm alergiasVm { get; set; } = new();
+	public EnfermedadVm enfermedadVm  { get; set; } = new();
+	public MedicamentoVm medicamentoVm { get; set; } = new();
 	public class AlergiasVm
 	{
 		public string? Descripcion { get; set; }
@@ -237,10 +237,9 @@
 					GrupoSanguineo = p.GrupoSanguineo,
 					FechaIngreso = p.FechaIngreso,
 					FechaAlta = p.FechaAlta,
-					AlergiasList = p.Alergias,
-					EnfermedadesList = p.Enfermedades,
-					MedicamentosList = p.Medicamentos,
-					AreaPaciente = p.AreaPaciente
+					Alergias = p.Alergias,
+					Enfermedades = p.Enfermedades,
+					Medicamentos = p.Medicamentos,
 				};
 			PacientesVMList.Add(pacienteViewModel);
 		}
@@ -297,53 +296,110 @@
 	{
 		try
 		{
-			Paciente? paciente = await Context.Pacientes.SingleOrDefaultAsync(p => p.Documento == DocumentoBorrar);
+			// Obtén el paciente correspondiente de la base de datos
+			Paciente paciente = await Context.Pacientes
+				.Include(p => p.Alergias)
+				.Include(p => p.Enfermedades)
+				.Include(p => p.Medicamentos)
+				.FirstOrDefaultAsync(p => p.Documento == DocumentoBorrar);
 
-			paciente.Nombre = PacienteVM.Nombre;
-			paciente.Apellido = PacienteVM.Apellido;
-			paciente.Direccion = PacienteVM.Direccion;
-			paciente.Documento = PacienteVM.Documento;
-			paciente.Telefono = PacienteVM.Telefono;
-			paciente.GrupoSanguineo = PacienteVM.GrupoSanguineo;
-			paciente.FechaIngreso = PacienteVM.FechaIngreso;
-			paciente.FechaAlta = PacienteVM.FechaAlta;
-			paciente.Alergias = new();
-			paciente.Enfermedades = new();
-			paciente.Medicamentos = new();
-			foreach (var alergiaVm in ListaAlergiasVm)
+			if (paciente != null)
 			{
-				Alergia alergia = new Alergia()
-					{
-						Descripcion = alergiaVm.Descripcion
-					};
+				// Actualiza las propiedades del paciente con los valores del ViewModel
+				paciente.Nombre = PacienteVM.Nombre;
+				paciente.Apellido = PacienteVM.Apellido;
+				paciente.Direccion = PacienteVM.Direccion;
+				paciente.Telefono = PacienteVM.Telefono;
+				paciente.GrupoSanguineo = PacienteVM.GrupoSanguineo;
+				paciente.FechaIngreso = PacienteVM.FechaIngreso;
+				paciente.FechaAlta = PacienteVM.FechaAlta;
+				// Asigna los valores de alergias, enfermedades y medicamentos
+				if (paciente.Alergias.Any())
+				{
+					paciente.Alergias.First().Descripcion = alergiasVm.Descripcion;
+				}
+				else
+				{
+					// Si la colección de alergias está vacía, crea una nueva alergia
+					Alergia alergia = new Alergia()
+						{
+							Descripcion = alergiasVm.Descripcion
+						};
+					paciente.Alergias.Add(alergia);
+				}
 
-				// Agregar la alergia a la lista de alergias del model
-				paciente.Alergias.Add(alergia);
+				if (paciente.Enfermedades.Any())
+				{
+					paciente.Enfermedades.First().Descripcion = enfermedadVm.Descripcion;
+				}
+				else
+				{
+					// Si la colección de enfermedades está vacía, crea una nueva enfermedad
+					Enfermedad enfermedad = new Enfermedad()
+						{
+							Descripcion = enfermedadVm.Descripcion
+						};
+					paciente.Enfermedades.Add(enfermedad);
+				}
+
+				if (paciente.Medicamentos.Any())
+				{
+					paciente.Medicamentos.First().Descripcion = medicamentoVm.Descripcion;
+				}
+				else
+				{
+					// Si la colección de medicamentos está vacía, crea un nuevo medicamento
+					Medicamento medicamento = new Medicamento()
+						{
+							Descripcion = medicamentoVm.Descripcion
+						};
+					paciente.Medicamentos.Add(medicamento);
+				}
+
+				// Agrega las nuevas alergias, enfermedades y medicamentos desde el ViewModel
+				foreach (var alergiaVm in ListaAlergiasVm)
+				{
+					Alergia alergia = new Alergia()
+						{
+							Descripcion = alergiaVm.Descripcion
+						};
+					paciente.Alergias.Add(alergia);
+				}
+
+				foreach (var enfermedadVm in ListaEnfermedadesVm)
+				{
+					Enfermedad enfermedad = new Enfermedad()
+						{
+							Descripcion = enfermedadVm.Descripcion
+						};
+					paciente.Enfermedades.Add(enfermedad);
+				}
+
+				foreach (var medicamentoVm in ListaMedicamentosVm)
+				{
+					Medicamento medicamento = new Medicamento()
+						{
+							Descripcion = medicamentoVm.Descripcion
+						};
+					paciente.Medicamentos.Add(medicamento);
+				}
+
+				// Guarda los cambios en la base de datos
+				await Context.SaveChangesAsync();
+
+				// Actualiza la lista de pacientes en la UI
+				await CargarPacienteVM();
+
+				// Cierra el formulario modal de edición
+				_visible = false;
+
+				// Muestra un mensaje de éxito
+				await message.Success($"Datos de {paciente.Apellido} {paciente.Nombre} editados correctamente");
 			}
-			foreach (var enfermedadVm in ListaEnfermedadesVm)
+			else
 			{
-				Enfermedad enfermedad = new Enfermedad()
-					{
-						Descripcion = enfermedadVm.Descripcion
-					};
-
-				// Agregar la alergia a la lista de alergias del model
-				paciente.Enfermedades.Add(enfermedad);
+				await message.Error("No se encontró el paciente en la base de datos.");
 			}
-			foreach (var medicamentoVm in ListaMedicamentosVm)
-			{
-				Medicamento medicamento = new Medicamento()
-					{
-						Descripcion = medicamentoVm.Descripcion
-					};
-
-				// Agregar la alergia a la lista de alergias del model
-				paciente.Medicamentos.Add(medicamento);
-			}
-			await Context.SaveChangesAsync();
-			await Init();
-			StateHasChanged();
-			await message.Success($"Datos de {paciente.Apellido} {paciente.Nombre} editado correctamente");
 		}
 		catch (Exception ex)
 		{
@@ -354,7 +410,6 @@
 			else
 				await message.Error(ex.Message, 5);
 		}
-
 	}
 
 	string NroEquipoEdit;
@@ -421,8 +476,14 @@
 	private async void GetComunicacionViewModel(string Documento)
 	{
 		PacienteVM = PacientesVMList.Single(p => p.Documento == Documento);
+
+		// Llena las propiedades de ViewModel con los valores actuales
+		alergiasVm.Descripcion = string.Join(",", PacienteVM.Alergias.Select(a => a.Descripcion));
+		enfermedadVm.Descripcion = string.Join(",", PacienteVM.Enfermedades.Select(e => e.Descripcion));
+		medicamentoVm.Descripcion = string.Join(",", PacienteVM.Medicamentos.Select(m => m.Descripcion));
+
 		StateHasChanged();
-	}//Se obtienen los valores de la base de datos al view model
+	}
 
 	private void Cancel()
 	{
