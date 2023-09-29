@@ -23,9 +23,8 @@
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <Content Update="wwwroot\medicos.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
+    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>
