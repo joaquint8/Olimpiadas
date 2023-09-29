@@ -1,0 +1,161 @@
+﻿@page "/cuenta"
+@layout MainLayout
+@using System.IO
+@using Microsoft.AspNetCore.Components.Forms
+
+<style>
+    .contenedor {
+        height: 100vh;
+        max-width: 767px;
+        width: 100%;
+        margin-bottom: 64px;
+    }
+
+    .header {
+        height: 65px;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    h2 {
+        font-weight: 700;
+        font-size: 1.5em;
+        transform: translate(0, 10%);
+    }
+
+    .contenido {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1em;
+        height: 100%;
+    }
+
+    img {
+        border-radius: 50%;
+        object-fit: contain;
+        background: black;
+        margin: 10px 0;
+        width: 100%;
+        height: 100%;
+        max-width: 170px;
+        max-height: 170px;
+    }
+
+    h3 {
+        font-weight: 700;
+        font-size: 1.3em;
+    }
+
+    .datos {
+        margin: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: white;
+        padding: 50px;
+        border-radius: 10px;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    }
+
+        .datos div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+    h4 {
+        font-size: 15px;
+        font-weight: 800;
+    }
+</style>
+
+<div class="contenedor">
+    <div class="header">
+        <h2>Mi perfil</h2>
+        <Button Style="position: absolute;right: 5px;background: transparent;border: none;box-shadow: none;" @onclick="_=>open()">
+            <i class="fa-solid fa-bars"></i>
+        </Button>
+        <Drawer Closable="true" Visible="visible" Placement="right" Title='("Editar perfil")' OnClose="_=>close()">
+            <EditForm Style="display: flex;flex-direction: column;gap: 15px;" Model="perfil" OnValidSubmit="HandleValidSubmit">
+                <div class="form-group">
+                    <label for="img">Imagen:</label>
+                    <InputFile id="img" OnChange="OnInputFileChange" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="nombreEmpleado">Nombre:</label>
+                    <InputText id="nombreEmpleado" @bind-Value="perfil.NombreEmpleado" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="grado">Grado:</label>
+                    <InputText id="grado" @bind-Value="perfil.Grado" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="Descripcion">Descripción:</label>
+                    <InputTextArea id="Descripcion" @bind-Value="perfil.Descripcion" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </EditForm>
+        </Drawer>
+    </div>
+    <div class="contenido">
+        <img src="@perfil.Img" />
+        <h3>@perfil.NombreEmpleado</h3>
+        <div class="datos">
+            <div>
+                <h4>Grado</h4>
+                <p>@perfil.Grado</p>
+            </div>
+            <div>
+                <h4>Descripcion:</h4>
+                <p>@perfil.Descripcion</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    public class PerfilModel
+    {
+        public string Img { get; set; } = "/emptyprofile.jpg";
+        public string NombreEmpleado { get; set; } = "Nombre Ejemplo";
+        public string Grado { get; set; } = "grado de ejemplo";
+        public string Descripcion { get; set; } = "descripcion de ejemplo";
+    }
+
+    PerfilModel perfil = new PerfilModel();
+    bool visible = false;
+
+    void open()
+    {
+        this.visible = true;
+    }
+
+    void close()
+    {
+        this.visible = false;
+    }
+
+    async Task HandleValidSubmit()
+    {
+        this.visible = false;
+        StateHasChanged();
+    }
+
+    async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var ms = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(ms);
+            var fileBytes = ms.ToArray();
+            string imageBase64Data = Convert.ToBase64String(fileBytes);
+            string imageDataURL = $"data:{file.ContentType};base64,{imageBase64Data}";
+            perfil.Img = imageDataURL;
+        }
+    }
+}

@@ -33,26 +33,32 @@
 <Layout Style="height: 100vh;">
     <Header Style="position: fixed; z-index: 1; width: 100%;">
         <div class="logo" />
-        <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Horizontal" DefaultSelectedKeys=@(new[]{"1"})>
-            <MenuItem Key="1">
+        <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Horizontal">
+            <MenuItem Key="0">
                 <NavLink href="/Empleado">Empleados</NavLink>
+            </MenuItem>
+            <MenuItem Key="1">
+                <NavLink href="/LlamadasGenerales">Llamadas</NavLink>
             </MenuItem>
             <SubMenu Key="sub1" TitleTemplate=@sub2Title>
                 <MenuItemGroup Key="g1">
                     <MenuItem Key="2">
-                        <NavLink href="/Pacientes">Ver</NavLink>
+                        <NavLink href="/Pacientes">Ver pacientes</NavLink>
                     </MenuItem>
                     <MenuItem Key="3">
+                        <NavLink href="/IngresoPacinete">Ingresos</NavLink>
+                    </MenuItem>
+                    <MenuItem Key="4">
                         <NavLink href="#">Ficha medica</NavLink>
                     </MenuItem>
                 </MenuItemGroup>
             </SubMenu>
             <SubMenu Key="sub1" TitleTemplate=@sub1Title>
-                <MenuItemGroup Key="g1" Title="Areas">
-                    <MenuItem Key="4">
+                <MenuItemGroup Key="g2" Title="Areas">
+                    <MenuItem Key="5">
                         <NavLink href="/areas">Agregar</NavLink>
                     </MenuItem>
-                    <MenuItem Key="5">
+                    <MenuItem Key="6">
                         <NavLink href="/DetallesAreas">Ver</NavLink>
                     </MenuItem>
                 </MenuItemGroup>

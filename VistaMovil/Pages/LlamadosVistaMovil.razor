@@ -1,8 +1,86 @@
-﻿@page "/llamadosMovil"
-@layout EmptyLayout
+﻿@page "/llamados"
+@layout MainLayout
+<style>
+    .contenedor{
+        margin: 1em;
+        padding: 20px;
+        height: max-content;
+        background: white;
+        border-radius: 10px;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    }
 
-<p>@hola</p>
+    body{
+        overflow-x: hidden;
+    }
 
+    /* estilos para la tabla */
+
+    .editable-cell {
+        position: relative;
+    }
+
+    .editable-cell-value-wrap {
+        padding: 5px 12px;
+        cursor: pointer;
+    }
+
+    .editable-row:hover .editable-cell-value-wrap {
+        padding: 4px 11px;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+    }
+
+    [data-theme='dark'] .editable-row:hover .editable-cell-value-wrap {
+        border: 1px solid #434343;
+    }
+</style>
+<div class="contenedor">
+    @* Hacer un foreach aca por cada llamada *@
+    <Collapse OnChange="Callback" Style="background: white;" Bordered="false">
+        <Panel Key="1">
+            <HeaderTemplate>
+                Llamada numero NRODELLAMADA
+            </HeaderTemplate>
+            <ChildContent>
+                <Table DataSource="listOfData" Responsive HidePagination>
+                    <PropertyColumn Width="30%" Property="c=>c.Paciente">
+                        @context.Paciente
+                    </PropertyColumn>
+                    <PropertyColumn Property="c=>c.Area"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.Habitacion"></PropertyColumn>
+                    <PropertyColumn Property="c=>c.Lugar"></PropertyColumn>
+                </Table>
+            </ChildContent>
+        </Panel>
+    </Collapse>
+</div>
+
+@* code para el collapse *@
 @code {
-	string hola = "hola mundo";
+
+    void Callback(string[] keys)
+    {
+        Console.WriteLine(string.Join(',', keys));
+    }
+}
+
+@* code para la tabla *@
+@code {
+    record ItemData(string Area, string Habitacion, string Lugar)
+    {
+        public string Paciente { get; set; }
+    };
+
+    ItemData[] listOfData = { };
+
+    void addRow()
+    {
+        listOfData = listOfData.Append(new($"AREA1", "HABITACION1", $"Baño") { Paciente = $"Cachetes" });
+    }
+
+    protected override void OnInitialized()
+    {
+        addRow();
+    }
 }

@@ -2,7 +2,38 @@
 
 <PageTitle>VistaMovil</PageTitle>
 
-<div class="page">
+<style>
+    #components-layout-demo-fixed .logo {
+        width: 120px;
+        height: 31px;
+        background: rgba(255, 255, 255, 0.2);
+        margin: 16px 24px 16px 0;
+        float: left;
+    }
+
+    .site-layout .site-layout-background {
+        background: #fff;
+    }
+    .ant-layout-header{
+        padding: 0!important;
+    }
+
+    .ant-menu-item {
+        width: 100%!important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .ant-menu-horizontal > .ant-menu-item, .ant-menu-horizontal > .ant-menu-submenu{
+        display: flex!important;
+    }
+    .ant-menu-horizontal > .ant-menu-item a::before{
+        bottom: 0;
+    }
+</style>
+
+@* <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
@@ -16,4 +47,29 @@
             @Body
         </article>
     </main>
-</div>
+</div> *@
+<Layout Style="height: 100vh;position: relative;">
+    <Header Style="position: fixed; z-index: 1; width: 100%;bottom: 0;">
+        <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Horizontal" DefaultSelectedKeys=@(new[]{"2"}) Style="width: 100%;display: flex;justify-content: center; align-items: center;">
+            <MenuItem Key="1">
+                <NavLink href="/llamados">
+                    <i class="fa-solid fa-phone"></i>
+                </NavLink>
+            </MenuItem>
+            <MenuItem Key="2">
+                <NavLink href="/inicio">
+                    <i class="fa-solid fa-house"></i>
+                </NavLink>
+            </MenuItem>
+            <MenuItem Key="3">
+                <NavLink href="/cuenta">
+                    <i class="fa-solid fa-user"></i>
+                </NavLink>
+            </MenuItem>
+        </Menu>
+    </Header>
+    <Content Class="site-layout">
+            @Body
+    </Content>
+</Layout>
+
