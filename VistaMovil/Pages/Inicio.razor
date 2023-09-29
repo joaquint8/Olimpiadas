@@ -1,8 +1,37 @@
 ﻿@page "/inicio"
 @layout MainLayout
 
-<h3>Inicio</h3>
+<style>
+    .contenedor {
+        height: 100vh;
+        max-width: 767px;
+        width: 100%;
+        margin-bottom: 64px;
+    }
+    img{
+        width: 100%;
+    }
+    .titulo{
+        font-size: 3em;
+        font-weight: 900;
+        padding: 0 1em;
+    }
 
+    .subtitulo {
+        font-size: 1em;
+        padding: 0 3em;
+        font-weight: 500;
+    }
+    p{
+        margin: 0;
+    }
+</style>
+
+<div class="contenedor">
+    <img src="/inicio.png" />
+    <p class="titulo">¡Bienvenido @Usuario!</p>
+    <p class="subtitulo">Esta es una aplicacion destinada al personal de nuestro hospital.</p>
+</div>
 @code {
-
+    string Usuario = "usuario";
 }

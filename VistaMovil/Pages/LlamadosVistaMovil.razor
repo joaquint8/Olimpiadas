@@ -1,11 +1,17 @@
 ﻿@page "/llamados"
 @layout MainLayout
 <style>
+    .contenedorGral{
+        height: 100vh;
+        max-width: 767px;
+        width: 100%;
+        margin-bottom: 64px;
+    }
     .contenedor{
         margin: 1em;
         padding: 20px;
         height: max-content;
-        background: white;
+        background: white; 
         border-radius: 10px;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
     }
@@ -35,26 +41,29 @@
         border: 1px solid #434343;
     }
 </style>
-<div class="contenedor">
-    @* Hacer un foreach aca por cada llamada *@
-    <Collapse OnChange="Callback" Style="background: white;" Bordered="false">
-        <Panel Key="1">
-            <HeaderTemplate>
-                Llamada numero NRODELLAMADA
-            </HeaderTemplate>
-            <ChildContent>
-                <Table DataSource="listOfData" Responsive HidePagination>
-                    <PropertyColumn Width="30%" Property="c=>c.Paciente">
-                        @context.Paciente
-                    </PropertyColumn>
-                    <PropertyColumn Property="c=>c.Area"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.Habitacion"></PropertyColumn>
-                    <PropertyColumn Property="c=>c.Lugar"></PropertyColumn>
-                </Table>
-            </ChildContent>
-        </Panel>
-    </Collapse>
+<div class="contenedorGral">
+    <div class="contenedor">
+        @* Hacer un foreach aca por cada llamada *@
+        <Collapse OnChange="Callback" Style="background: white;" Bordered="false">
+            <Panel Key="1">
+                <HeaderTemplate>
+                    Llamada numero NRODELLAMADA
+                </HeaderTemplate>
+                <ChildContent>
+                    <Table DataSource="listOfData" Responsive HidePagination>
+                        <PropertyColumn Width="30%" Property="c=>c.Paciente">
+                            @context.Paciente
+                        </PropertyColumn>
+                        <PropertyColumn Property="c=>c.Area"></PropertyColumn>
+                        <PropertyColumn Property="c=>c.Habitacion"></PropertyColumn>
+                        <PropertyColumn Property="c=>c.Lugar"></PropertyColumn>
+                    </Table>
+                </ChildContent>
+            </Panel>
+        </Collapse>
+    </div>
 </div>
+
 
 @* code para el collapse *@
 @code {
