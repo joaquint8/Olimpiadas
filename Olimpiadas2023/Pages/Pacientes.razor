@@ -223,7 +223,7 @@
 	{
 		PacientesVMList.Clear();
 		var pacienteDB = await Context.Pacientes.Include(p => p.Alergias).Include(p => p.Enfermedades)
-		.Include(m => m.Medicamentos).Include(a => a.AreaPaciente).ToListAsync();
+		.Include(m => m.Medicamentos).ToListAsync();
 
 		foreach (Paciente p in pacienteDB)
 		{
@@ -240,7 +240,7 @@
 					AlergiasList = p.Alergias,
 					EnfermedadesList = p.Enfermedades,
 					MedicamentosList = p.Medicamentos,
-					AreaPaciente = p.AreaPaciente
+					
 				};
 			PacientesVMList.Add(pacienteViewModel);
 		}

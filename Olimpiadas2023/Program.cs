@@ -26,44 +26,44 @@ if (!app.Environment.IsDevelopment())
 }
 //Creacion de API
 // Agregamos servicios al contenedor
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    // El middleware HSTS predeterminado agrega la cabecera Strict-Transport-Security.
-    app.UseHsts();
-}
+//if (!app.Environment.IsDevelopment())
+//{
+//    app.UseExceptionHandler("/Error");
+//    // El middleware HSTS predeterminado agrega la cabecera Strict-Transport-Security.
+//    app.UseHsts();
+//}
 
 
-// Agrega servicios al contenedor.
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+//// Agrega servicios al contenedor.
+//builder.Services.AddRazorPages();
+//builder.Services.AddServerSideBlazor();
 
-// Habilita CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowSpecificOrigin",
-        builder =>
-        {
-            builder.WithOrigins("http://localhost:5000/VistaMovil") // Reemplaza con la URL de tu ProyectoB
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
-        });
-});
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+//// Habilita CORS
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowSpecificOrigin",
+//        builder =>
+//        {
+//            builder.WithOrigins("http://localhost:5000/VistaMovil") // Reemplaza con la URL de tu ProyectoB
+//                   .AllowAnyHeader()
+//                   .AllowAnyMethod();
+//        });
+//});
+//app.UseHttpsRedirection();
+//app.UseStaticFiles();
 
-app.UseRouting();
+//app.UseRouting();
 
-app.UseCors("AllowSpecificOrigin");
+//app.UseCors("AllowSpecificOrigin");
 
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+//app.MapBlazorHub();
+//app.MapFallbackToPage("/_Host");
 
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
+//app.UseHttpsRedirection();
+//app.UseAuthorization();
+//app.MapControllers();
 
-app.Run();
+//app.Run();
 
 
 app.UseHttpsRedirection();

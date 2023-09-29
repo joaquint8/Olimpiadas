@@ -17,11 +17,24 @@
     <FormItem Label="Estado de la habitacion">
         <EnumSelect TEnum="EstadoHabitacion" @bind-Value="@habitacionVm.EstadoHabitacion" />
     </FormItem>
-    <FormItem Label="Numero de habitacion">
+    <FormItem Label="Capacidad de habitacion">
         <AntDesign.InputNumber @bind-Value="habitacionVm.Capacidad"></AntDesign.InputNumber>
     </FormItem>
     <FormItem Label="Descripcion">
         <Input @bind-Value="@habitacionVm.Descripcion" />
+    </FormItem>
+    <FormItem Label="Asignar Area">
+        <Select TItem="AreasVm"
+                TItemValue="int"
+                DataSource="@AreasGet"
+        @bind-Value="@habitacionVm.AreaId"
+                LabelName="@nameof(AreasVm.NombreArea)"
+                ValueName="@nameof(AreasVm.AreaId)"
+                Placeholder="Selecione el bombero"
+                DefaultActiveFirstOption="false"
+                AllowClear="true"
+                EnableSearch>
+        </Select>
     </FormItem>
     <FormItem WrapperColOffset="8" WrapperColSpan="16">
         <Button Type="@ButtonType.Primary" HtmlType="submit">
@@ -40,8 +53,18 @@
         public EstadoHabitacion EstadoHabitacion { get; set; }
         public int Capacidad { get; set; }
         public string? Descripcion { get; set; }
+        public int AreaId { get; set; }
+    }
+    public class AreasVm
+    {
+        public int AreaId { get; set; }
+        public TipoAreas TipoArea { get; set; }
+        public string? NombreArea { get { return TipoArea.ToString(); } }
+        public string? TipoAcceso { get; set; }
+
     }
     private HabitacionVm habitacionVm = new();
+    public List<AreasVm> AreasGet = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,19 +75,38 @@
     {
         habitacionVm = new();
         Context = DbFactory.CreateDbContext();
+        await GetAreas();
     }
+    private async Task GetAreas()
+    {
+        AreasGet = new();
+        var Areas = await Context.Areas.ToListAsync();
+        foreach (var a in Areas)
+        {
+            AreasVm ar = new()
+                {
+                    AreaId = a.AreaId,
+                    TipoArea = a.TipoArea,
+                    TipoAcceso = a.TipoAcceso
 
+                };
+            AreasGet.Add(ar);
+        }
+    }
     private async void OnFinish(EditContext editContext)
     {
         try
         {
+            var AreaAsignada = await Context.Areas.SingleOrDefaultAsync(a => a.AreaId == habitacionVm.AreaId);
             Habitacion h = new()
                 {
                     NombreHabitacion = habitacionVm.NombreHabitacion,
                     TipoHabitacion = habitacionVm.TipoHabitacion,
                     EstadoHabitacion = habitacionVm.EstadoHabitacion,
                     Capacidad = habitacionVm.Capacidad,
-                    Descripcion = habitacionVm.Descripcion
+                    Descripcion = habitacionVm.Descripcion,
+                    AreaAasignada = AreaAsignada
+
                 };
             Context.Habitaciones.Add(h);
             await Context.SaveChangesAsync();
