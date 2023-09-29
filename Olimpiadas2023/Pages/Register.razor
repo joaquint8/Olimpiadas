@@ -1,7 +1,4 @@
 ﻿@page "/register"
-@inject NavigationManager navigationManager
-@inject IMessageService message
-
 @layout EmptyLayout
 <PageTitle>Registro</PageTitle>
 
@@ -121,7 +118,7 @@
             <i class="fa-solid fa-lock"></i>
             <input class="input-contraseña" @bind="contraseñaRepetir" @bind:event="oninput" placeholder="Repetir contraseña" type="@inputContraseñaRepetidaType" @onfocus="ActivatePasswordRepetirInput" @onblur="DeactivatePasswordRepetirInput" />
             <button class="mostrar-contraseña" @onclick="TogglePasswordRepetirVisibility">
-                <i class="@cambiarIconoContraseña"></i>
+                <i class="@cambiarIconoContraseñaRepetida"></i>
             </button>
         </div>
         <div>
@@ -181,7 +178,7 @@
 
     private void DeactivatePasswordRepetirInput()
     {
-        if (string.IsNullOrEmpty(contraseña))
+        if (string.IsNullOrEmpty(contraseñaRepetir))
         {
             repetirContraseñaInputClass = "";
         }
