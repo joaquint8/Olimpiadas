@@ -8,8 +8,8 @@
       OnFinishFailed="OnFinishFailed"
       LabelColSpan="8"
       WrapperColSpan="16">
-    <FormItem Label="Numero de habitaciones">
-        <AntDesign.InputNumber @bind-Value="habitacionVm.NumeroHabitacion"></AntDesign.InputNumber>
+    <FormItem Label="Nombre de la habitacion">
+        <Input @bind-Value="@habitacionVm.NombreHabitacion" />
     </FormItem>
     <FormItem Label="Tipo de habitacon">
         <EnumSelect TEnum="TipoHabitacion" @bind-Value="@habitacionVm.TipoHabitacion" />
@@ -35,7 +35,7 @@
     CodigoAzulContext? Context;
     public class HabitacionVm
     {
-        public int NumeroHabitacion { get; set; }
+        public string NombreHabitacion { get; set; }
         public TipoHabitacion TipoHabitacion { get; set; }
         public EstadoHabitacion EstadoHabitacion { get; set; }
         public int Capacidad { get; set; }
@@ -60,7 +60,7 @@
         {
             Habitacion h = new()
                 {
-                    NumeroHabitacion = habitacionVm.NumeroHabitacion,
+                    NombreHabitacion = habitacionVm.NombreHabitacion,
                     TipoHabitacion = habitacionVm.TipoHabitacion,
                     EstadoHabitacion = habitacionVm.EstadoHabitacion,
                     Capacidad = habitacionVm.Capacidad,

@@ -7,6 +7,6 @@ namespace Olimpiadas2023.Models.Componentes
         public int AreaId { get; set; }
         public TipoAreas TipoArea { get; set; }
         public string?  TipoAcceso { get; set; }
-        List<Habitacion>? Habitaciones { get; set; }
+        public List<Habitacion>? Habitaciones { get; set; }
     }
 }

@@ -1,0 +1,144 @@
+﻿@implements IDisposable
+@inject IMessageService message
+@inject IDbContextFactory<CodigoAzulContext> DbFactory
+@page "/areas"
+@using Olimpiadas2023.Enum
+
+<div style="display:flex;flex-direction:column;align-items:center;width:80%;">
+    <Form Model="@areasVm"
+          OnFinish="OnFinish"
+          OnFinishFailed="OnFinishFailed"
+          LabelColSpan="8"
+          WrapperColSpan="16">
+        <FormItem Label="Tipo de Area">
+            <EnumSelect TEnum="TipoAreas" @bind-Value="@areasVm.TipoArea" />
+        </FormItem>
+        <FormItem Label="Tipo de acceso">
+            <Input @bind-Value="@areasVm.TipoAcceso" />
+        </FormItem>
+        <FormItem Label="Asignar habitaciones">
+            <Select TItem="HabitacionVm"
+                    TItemValue="int"
+                    DataSource="@HabitacionesVm"
+                    @bind-Value="@areasVm.HabitacionId"
+                    LabelName="@nameof(HabitacionVm.NombreHabitacion)"
+                    ValueName="@nameof(HabitacionVm.HabitacionId)"
+                    Placeholder="Selecione el bombero"
+                    DefaultActiveFirstOption="false"
+                    AllowClear="true"
+                    EnableSearch>
+            </Select>
+        </FormItem>
+        <FormItem WrapperColOffset="8" WrapperColSpan="16">
+            <Button Type="@ButtonType.Primary" HtmlType="submit">
+                Cargar Area
+            </Button>
+        </FormItem>
+    </Form>
+</div>
+
+
+@code {
+    CodigoAzulContext Context;
+    public class AreasVm
+    {
+        public TipoAreas TipoArea { get; set; }
+        public string? TipoAcceso { get; set; }
+        public int HabitacionId { get; set; }
+    }
+    public class HabitacionVm
+    {
+        public int HabitacionId { get; set; }
+        public string NombreHabitacion { get; set; }
+        public TipoHabitacion TipoHabitacion { get; set; }
+        public EstadoHabitacion EstadoHabitacion { get; set; }
+        public int Capacidad { get; set; }
+        public string? Descripcion { get; set; }
+    }
+
+    public List<HabitacionVm> HabitacionesVm = new();
+    public AreasVm areasVm = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Init();
+    }
+
+    private async Task Init()
+    {
+        areasVm = new();
+        Context = DbFactory.CreateDbContext();
+        await Cargarhabitaciones();
+    }
+    private async Task Cargarhabitaciones()
+    {
+        HabitacionesVm = new();
+        var Habitaciones = await Context.Habitaciones.ToListAsync();
+        foreach (var h in Habitaciones)
+        {
+            HabitacionVm hVM = new()
+                {
+                    HabitacionId = h.HabitacionId,
+                    NombreHabitacion = h.NombreHabitacion,
+                    TipoHabitacion = h.TipoHabitacion,
+                    EstadoHabitacion = h.EstadoHabitacion,
+                    Capacidad = h.Capacidad,
+                    Descripcion = h.Descripcion
+                };
+            HabitacionesVm.Add(hVM);
+        }
+    }
+    private async void OnFinish(EditContext editContext)
+    {
+        try
+        {
+
+            Area AreaCargar = new()
+                {
+                    TipoArea = areasVm.TipoArea,
+                    TipoAcceso = areasVm.TipoAcceso,
+                    Habitaciones = new()
+                };
+            foreach (var a in HabitacionesVm)
+            {
+                Habitacion habi = new()
+                    {
+                        HabitacionId = a.HabitacionId,
+                        NombreHabitacion = a.NombreHabitacion,
+                        TipoHabitacion = a.TipoHabitacion,
+                        EstadoHabitacion = a.EstadoHabitacion,
+                        Capacidad = a.Capacidad,
+                        Descripcion = a.Descripcion
+
+                    };
+                AreaCargar.Habitaciones.Add(habi);
+            }
+            Context.Set<Area>().Add(AreaCargar);    
+            await Context.SaveChangesAsync();
+
+            await Init();
+            StateHasChanged();
+            await message.Success("Habitacion se a cargado correctamente");
+        }
+        catch (Exception e)
+        {
+            await Init();
+            StateHasChanged();
+            if (e.InnerException != null)
+                await message.Error(e.InnerException.Message, 5);
+            else
+                await message.Error(e.Message, 5);
+
+        }
+    }
+
+    private void OnFinishFailed(EditContext editContext)
+    {
+        //Console.WriteLine($"Failed:{JsonSerializer.Serialize()}");
+    }
+
+    public void Dispose()
+    {
+        Context?.Dispose();
+    }
+}
