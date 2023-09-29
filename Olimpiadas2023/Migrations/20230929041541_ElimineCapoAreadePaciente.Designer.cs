@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Olimpiadas2023.Models;
 
@@ -11,9 +12,11 @@ using Olimpiadas2023.Models;
 namespace Olimpiadas2023.Migrations
 {
     [DbContext(typeof(CodigoAzulContext))]
-    partial class CodigoAzulContextModelSnapshot : ModelSnapshot
+    [Migration("20230929041541_ElimineCapoAreadePaciente")]
+    partial class ElimineCapoAreadePaciente
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,25 +44,6 @@ namespace Olimpiadas2023.Migrations
                     b.HasIndex("PacientePersonaId");
 
                     b.ToTable("Alergia");
-                });
-
-            modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Area", b =>
-                {
-                    b.Property<int>("AreaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AreaId"));
-
-                    b.Property<string>("TipoAcceso")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TipoArea")
-                        .HasColumnType("int");
-
-                    b.HasKey("AreaId");
-
-                    b.ToTable("Areas");
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Enfermedad", b =>
@@ -91,9 +75,6 @@ namespace Olimpiadas2023.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HabitacionId"));
 
-                    b.Property<int?>("AreaId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Capacidad")
                         .HasColumnType("int");
 
@@ -115,8 +96,6 @@ namespace Olimpiadas2023.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.HasKey("HabitacionId");
-
-                    b.HasIndex("AreaId");
 
                     b.HasIndex("NombreHabitacion");
 
@@ -442,13 +421,6 @@ namespace Olimpiadas2023.Migrations
                     b.Navigation("Paciente");
                 });
 
-            modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Habitacion", b =>
-                {
-                    b.HasOne("Olimpiadas2023.Models.Componentes.Area", null)
-                        .WithMany("Habitaciones")
-                        .HasForeignKey("AreaId");
-                });
-
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.HistorialMedico", b =>
                 {
                     b.HasOne("Olimpiadas2023.Models.Personales.Paciente", "Paciente")
@@ -535,11 +507,6 @@ namespace Olimpiadas2023.Migrations
                         .IsRequired();
 
                     b.Navigation("UsuarioEmpleado");
-                });
-
-            modelBuilder.Entity("Olimpiadas2023.Models.Componentes.Area", b =>
-                {
-                    b.Navigation("Habitaciones");
                 });
 
             modelBuilder.Entity("Olimpiadas2023.Models.Componentes.HistorialMedico", b =>

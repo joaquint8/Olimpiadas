@@ -13,6 +13,6 @@ namespace Olimpiadas2023.Models.Personales
         public  List<Medicamento>? Medicamentos  { get; set; }
         public HistorialMedico? HistorialMedicos { get; set; }
         public List<IngresoPaciente>? HistorialIngreso { get; set; }
-        public Area? AreaPaciente { get; set; }
+        
     }
 }

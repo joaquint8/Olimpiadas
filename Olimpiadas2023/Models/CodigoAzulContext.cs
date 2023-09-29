@@ -12,6 +12,7 @@ namespace Olimpiadas2023.Models
         public DbSet<Paciente> Pacientes { get; set; }
         public DbSet<Empleado> Empleados { get; set; }
         public DbSet<Habitacion> Habitaciones { get; set; }
+        public DbSet<Area> Areas { get; set; }
         public DbSet<Usuario>  Usuarios { get; set; }
         public DbSet<Rol> Roles { get; set; }
         public CodigoAzulContext(DbContextOptions<CodigoAzulContext> options)
