@@ -13,22 +13,20 @@
     .site-layout .site-layout-background {
         background: #fff;
     }
+
+    .ant-layout-header, .ant-menu {
+        background: #1f1f1f !important;
+    }
+
+    .ant-menu-title-content{
+        color: #fafafa!important;
+        font-weight: 600!important;
+    }
+
+    .ant-menu-item-selected, .ant-menu-item:hover {
+        background: #003eb3 !important;
+    }
 </style>
-@*<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>*@
 
 <Layout Style="height: 100vh;">
     <Header Style="position: fixed; z-index: 1; width: 100%;">
@@ -46,7 +44,7 @@
                         <NavLink href="/Pacientes">Ver pacientes</NavLink>
                     </MenuItem>
                     <MenuItem Key="3">
-                        <NavLink href="/IngresoPacinete">Ingresos</NavLink>
+                        <NavLink href="/IngresoPaciente">Ingresos</NavLink>
                     </MenuItem>
                     <MenuItem Key="4">
                         <NavLink href="#">Ficha medica</NavLink>
@@ -54,7 +52,7 @@
                 </MenuItemGroup>
             </SubMenu>
             <SubMenu Key="sub1" TitleTemplate=@sub1Title>
-                <MenuItemGroup Key="g2" Title="Areas">
+                <MenuItemGroup Key="g2">
                     <MenuItem Key="5">
                         <NavLink href="/areas">Agregar</NavLink>
                     </MenuItem>
@@ -81,12 +79,10 @@
 @code{
     RenderFragment sub1Title =
     @<span>
-        <Icon Type="mail" Theme="outline"></Icon>
-        <span>Herramientas</span>
+        <span>Areas</span>
     </span>;
     RenderFragment sub2Title =
     @<span>
-        <Icon Type="mail" Theme="outline"></Icon>
         <span>Pacientes</span>
     </span>;
 }
